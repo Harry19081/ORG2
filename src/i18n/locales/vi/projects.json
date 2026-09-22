@@ -72,6 +72,11 @@
     "personalOrg": "Không gian làm việc của tôi",
     "linearOrg": "Không gian làm việc Linear",
     "noLinearOrgs": "Chưa có không gian làm việc nào được kết nối",
+    "scopeSwitch": "Phạm vi không gian làm việc",
+    "scope": {
+      "local": "Cục bộ",
+      "cloud": "Đám mây"
+    },
     "sources": {
       "local": "Local",
       "cloud": "Cloud"

@@ -72,6 +72,11 @@
     "personalOrg": "我的工作空間",
     "linearOrg": "Linear 工作空間",
     "noLinearOrgs": "尚未連接任何工作空間",
+    "scopeSwitch": "工作空間範圍",
+    "scope": {
+      "local": "本地",
+      "cloud": "雲端"
+    },
     "sources": {
       "local": "Local",
       "cloud": "Cloud"

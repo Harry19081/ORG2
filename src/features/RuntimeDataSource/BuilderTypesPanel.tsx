@@ -2,19 +2,20 @@ import { useState } from "react";
 import { useTranslation } from "react-i18next";
 
 import Button from "@src/components/Button";
-import {
-  SECTION_GAP_CLASSES,
-  SECTION_SUBHEADING_CLASSES,
-} from "@src/components/layout/Section";
+import { SECTION_SUBHEADING_CLASSES } from "@src/components/layout/Section";
 import { PANEL_HEADER_TOKENS } from "@src/components/layout/blocks/PanelHeader/tokens";
-import {
-  DETAIL_PANEL_TOKENS,
-  STAT_GRID_TOKENS,
-} from "@src/config/detailPanelTokens";
+import { STAT_GRID_TOKENS } from "@src/config/detailPanelTokens";
 import { ArrowLeft02Icon, HugeiconsIcon } from "@src/icons";
 
 import BuilderTypeAvatar from "./BuilderTypeAvatar";
 import BuilderTypeDetailModal from "./BuilderTypeDetailPanel";
+import {
+  RUNTIME_PAGE_SCROLL,
+  RUNTIME_PAGE_SHELL,
+  RUNTIME_PAGE_TRACK,
+  RuntimePageBody,
+} from "./RuntimePageLayout";
+import { RUNTIME_SECTION_HEADER_HEIGHT } from "./RuntimeSectionHeader";
 import {
   BUILDER_TYPES,
   type BuilderTypeDefinition,
@@ -94,12 +95,9 @@ export default function BuilderTypesPanel({ onBack }: BuilderTypesPanelProps) {
   };
 
   return (
-    <div
-      className="flex h-full min-h-0 flex-col"
-      data-testid="builder-types-panel"
-    >
+    <div className={RUNTIME_PAGE_SHELL} data-testid="builder-types-panel">
       <div
-        className={`${DETAIL_PANEL_TOKENS.headerWidth} flex min-h-10 shrink-0 items-center gap-2 px-4 pt-2`}
+        className={`${RUNTIME_PAGE_TRACK} ${RUNTIME_SECTION_HEADER_HEIGHT} flex shrink-0 items-center gap-2`}
       >
         <Button
           {...PANEL_HEADER_TOKENS.actionButton}
@@ -119,18 +117,11 @@ export default function BuilderTypesPanel({ onBack }: BuilderTypesPanelProps) {
         <h2 className={SECTION_SUBHEADING_CLASSES}>{t("types.title")}</h2>
       </div>
 
-      <div className="@container scrollbar-hide min-h-0 flex-1 overflow-y-auto px-4">
-        <div
-          className={`${DETAIL_PANEL_TOKENS.headerWidth} ${SECTION_GAP_CLASSES} pt-2 pb-[25vh]`}
-        >
-          <section aria-labelledby="builder-types-gallery-title">
-            <h2
-              id="builder-types-gallery-title"
-              className={SECTION_SUBHEADING_CLASSES}
-            >
-              {t("types.galleryTitle")}
-            </h2>
-            <p className="mb-3 text-sm text-text-3">{t("types.galleryHint")}</p>
+      <div className={RUNTIME_PAGE_SCROLL}>
+        <RuntimePageBody>
+          {/* Title-less on purpose: the panel header already names this
+              surface, and the grid of avatars explains itself. */}
+          <section aria-label={t("types.title")}>
             <div
               className={STAT_GRID_TOKENS.cols4}
               data-testid="builder-types-gallery"
@@ -172,7 +163,7 @@ export default function BuilderTypesPanel({ onBack }: BuilderTypesPanelProps) {
               ))}
             </div>
           </section>
-        </div>
+        </RuntimePageBody>
       </div>
 
       {selectedType && (

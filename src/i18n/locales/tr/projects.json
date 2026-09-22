@@ -72,6 +72,11 @@
     "personalOrg": "Çalışma alanım",
     "linearOrg": "Linear çalışma alanını",
     "noLinearOrgs": "Henüz bağlı çalışma alanı yok",
+    "scopeSwitch": "Çalışma alanı kapsamı",
+    "scope": {
+      "local": "Yerel",
+      "cloud": "Cloud"
+    },
     "sources": {
       "local": "Local",
       "cloud": "Cloud"

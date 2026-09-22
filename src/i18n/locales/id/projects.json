@@ -72,6 +72,11 @@
     "personalOrg": "Ruang kerja saya",
     "linearOrg": "Ruang Kerja Linear",
     "noLinearOrgs": "Belum ada ruang kerja yang terhubung",
+    "scopeSwitch": "Cakupan ruang kerja",
+    "scope": {
+      "local": "Lokal",
+      "cloud": "Cloud"
+    },
     "sources": {
       "local": "Lokal",
       "cloud": "Cloud"

@@ -19,19 +19,23 @@ import SettingsTable, {
   type SettingsTableColumn,
 } from "@src/components/SettingsTable";
 import {
-  SECTION_GAP_CLASSES,
   SECTION_SUBHEADING_CLASSES,
   SectionContainer,
   SectionRow,
 } from "@src/components/layout/Section";
 import { CollapsibleSection } from "@src/components/layout/blocks";
-import { DETAIL_PANEL_TOKENS } from "@src/config/detailPanelTokens";
 import { ArrowRight02Icon, HugeiconsIcon } from "@src/icons";
 
 import AxisMeter from "./AxisMeter";
 import { BuilderTypeDetailContent } from "./BuilderTypeDetailPanel";
 import BuilderTypesPanel from "./BuilderTypesPanel";
 import HighlightCards from "./HighlightCards";
+import {
+  RUNTIME_PAGE_SCROLL,
+  RUNTIME_PAGE_SHELL,
+  RUNTIME_PAGE_TRACK,
+  RuntimePageBody,
+} from "./RuntimePageLayout";
 import { RuntimeSectionHeader } from "./RuntimeSectionHeader";
 import { getBuilderType } from "./builderTypes";
 
@@ -359,7 +363,7 @@ export default function BuilderProfilePanel() {
   const profileHeader = (
     <RuntimeSectionHeader
       title={t("title")}
-      className={`${DETAIL_PANEL_TOKENS.headerWidth} shrink-0 px-4 pt-2`}
+      className={RUNTIME_PAGE_TRACK}
       dataTestId="builder-profile-title-controls"
       headingLevel="h2"
     >
@@ -391,10 +395,7 @@ export default function BuilderProfilePanel() {
   );
 
   const shell = (children: React.ReactNode, showHeader = true) => (
-    <div
-      className="flex h-full min-h-0 flex-col"
-      data-testid="builder-profile-panel"
-    >
+    <div className={RUNTIME_PAGE_SHELL} data-testid="builder-profile-panel">
       {showHeader && profileHeader}
       {children}
     </div>
@@ -438,15 +439,11 @@ export default function BuilderProfilePanel() {
 
   return shell(
     <div
-      className="@container scrollbar-hide min-h-0 flex-1 overflow-y-auto"
+      className={RUNTIME_PAGE_SCROLL}
       data-testid="builder-profile-scroll-region"
     >
       {profileHeader}
-      <div
-        // Same 932px track as the tab header above, so nothing steps in or
-        // out of alignment as you scroll.
-        className={`${DETAIL_PANEL_TOKENS.headerWidth} ${SECTION_GAP_CLASSES} px-4 pt-2 pb-[25vh]`}
-      >
+      <RuntimePageBody>
         {profile.sessions === 0 || !builderType ? (
           <div
             className="rounded-lg bg-bg-2 px-4 py-8 text-center text-sm text-text-3"
@@ -602,7 +599,7 @@ export default function BuilderProfilePanel() {
             </LazyBreakdownContent>
           </Section>
         )}
-      </div>
+      </RuntimePageBody>
     </div>,
     false
   );

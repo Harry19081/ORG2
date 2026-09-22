@@ -72,6 +72,11 @@
     "personalOrg": "내 워크스페이스",
     "linearOrg": "Linear 워크스페이스",
     "noLinearOrgs": "아직 연결된 워크스페이스가 없습니다",
+    "scopeSwitch": "워크스페이스 범위",
+    "scope": {
+      "local": "로컬",
+      "cloud": "클라우드"
+    },
     "sources": {
       "local": "Local",
       "cloud": "Cloud"

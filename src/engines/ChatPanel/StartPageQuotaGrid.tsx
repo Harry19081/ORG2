@@ -366,7 +366,7 @@ export function StartPageQuotaGrid({
       {showHeader ? (
         <RuntimeSectionHeader
           title={t("kanban.dataSource.views.quota")}
-          className="-mx-4 bg-chat-pane px-4 pt-2 pb-1"
+          className="-mx-4 bg-chat-pane px-4"
           dataTestId="quota-refresh-controls"
           headingLevel="h3"
         >

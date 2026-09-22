@@ -272,6 +272,14 @@ function SettingsTableToolbar<RowData>({
       title={filterConfig.title ?? t("actions.filter")}
     />
   ) : undefined;
+  // An empty left column still contributes its flex gap, which pushes the
+  // right column — usually just the search field — off the table's own gutter
+  // and out of line with the rows below it.
+  const hasLeftControls =
+    !!searchBar?.leftContent ||
+    (selectFilters?.length ?? 0) > 0 ||
+    !!effectiveTabPills ||
+    !!searchBar?.searchCountText;
   const hasRightControls =
     !!selectFiltersExtra ||
     !!filterButton ||
@@ -282,46 +290,48 @@ function SettingsTableToolbar<RowData>({
 
   return (
     <div className="flex min-w-0 flex-col gap-2 pt-2 pb-2 @[640px]:flex-row @[640px]:items-center">
-      <div className="order-2 scrollbar-hide w-full min-w-0 overflow-x-auto overflow-y-hidden @[640px]:order-1 @[640px]:w-auto @[640px]:flex-none">
-        <div className="flex w-max min-w-full items-center gap-2">
-          {searchBar?.leftContent}
-          {selectFilters?.map((filter) => {
-            const isActive = filter.value !== filter.defaultValue;
-            return (
-              <Select
-                key={filter.key}
-                value={filter.value}
-                options={filter.options}
-                onChange={(val) => filter.onChange(val as string | number)}
-                appearance={filter.appearance ?? "ghost"}
-                dropdownWidthMode="auto"
-                dropdownMinWidth={
-                  filter.minWidth ?? SETTINGS_TABLE_FILTER_MIN_WIDTH
-                }
-                showSearch={filterIsSearchable(filter)}
-                // Option marks belong to the dropdown rows; the closed trigger
-                // stays a plain label so the toolbar reads as one row of text.
-                showTriggerIcon={false}
-                className={isActive ? "text-primary-6" : ""}
-              />
-            );
-          })}
-          <ResetFiltersButton
-            filters={selectFilters}
-            label={t("actions.resetFilters")}
-          />
-          {effectiveTabPills ? (
-            <div className="flex min-w-0 shrink-0 items-center gap-2">
-              {effectiveTabPills}
-            </div>
-          ) : null}
-          {searchBar?.searchCountText ? (
-            <span className="text-[13px] font-semibold text-text-1">
-              {searchBar.searchCountText}
-            </span>
-          ) : null}
+      {hasLeftControls ? (
+        <div className="order-2 scrollbar-hide w-full min-w-0 overflow-x-auto overflow-y-hidden @[640px]:order-1 @[640px]:w-auto @[640px]:flex-none">
+          <div className="flex w-max min-w-full items-center gap-2">
+            {searchBar?.leftContent}
+            {selectFilters?.map((filter) => {
+              const isActive = filter.value !== filter.defaultValue;
+              return (
+                <Select
+                  key={filter.key}
+                  value={filter.value}
+                  options={filter.options}
+                  onChange={(val) => filter.onChange(val as string | number)}
+                  appearance={filter.appearance ?? "ghost"}
+                  dropdownWidthMode="auto"
+                  dropdownMinWidth={
+                    filter.minWidth ?? SETTINGS_TABLE_FILTER_MIN_WIDTH
+                  }
+                  showSearch={filterIsSearchable(filter)}
+                  // Option marks belong to the dropdown rows; the closed trigger
+                  // stays a plain label so the toolbar reads as one row of text.
+                  showTriggerIcon={false}
+                  className={isActive ? "text-primary-6" : ""}
+                />
+              );
+            })}
+            <ResetFiltersButton
+              filters={selectFilters}
+              label={t("actions.resetFilters")}
+            />
+            {effectiveTabPills ? (
+              <div className="flex min-w-0 shrink-0 items-center gap-2">
+                {effectiveTabPills}
+              </div>
+            ) : null}
+            {searchBar?.searchCountText ? (
+              <span className="text-[13px] font-semibold text-text-1">
+                {searchBar.searchCountText}
+              </span>
+            ) : null}
+          </div>
         </div>
-      </div>
+      ) : null}
       {hasRightControls ? (
         <div className="order-1 flex w-full min-w-0 items-center justify-end gap-2 @[640px]:order-2 @[640px]:flex-1">
           {selectFiltersExtra ? (

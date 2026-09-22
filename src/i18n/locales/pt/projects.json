@@ -72,6 +72,11 @@
     "personalOrg": "Meu espaço de trabalho",
     "linearOrg": "Espaço de trabalho Linear",
     "noLinearOrgs": "Nenhum espaço de trabalho conectado ainda",
+    "scopeSwitch": "Escopo do espaço de trabalho",
+    "scope": {
+      "local": "Local",
+      "cloud": "Cloud"
+    },
     "sources": {
       "local": "Local",
       "cloud": "Cloud"
