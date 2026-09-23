@@ -17,7 +17,7 @@ import Message from "@src/components/Message";
 import PrStatusBadge from "@src/components/PrStatusBadge";
 import Textarea from "@src/components/Textarea";
 import GitHubFlowHeader from "@src/features/GitHubWork/GitHubFlowHeader";
-import { Copy01Icon, HugeiconsIcon } from "@src/icons";
+import { Copy01Icon, HugeiconsIcon, Pen01Icon } from "@src/icons";
 import type { PrIdentity } from "@src/store/workstation/codeEditor/workstationSelectedPrAtom";
 import { copyText } from "@src/util/data/clipboard";
 
@@ -199,91 +199,125 @@ export function PrFlowHeader({
 
   return (
     <div className="flex flex-col gap-3">
-      <GitHubFlowHeader
-        testIdPrefix="pr-flow"
-        ariaLabel={t("git.pr.summary.label")}
-        title={title}
-        number={identity.number}
-        status={<PrStatusBadge status={identity.status} size="sm" showIcon />}
-        actor={actor}
-        unknownActorLabel={t("git.pr.unknownAuthor")}
-      >
-        <span>{verbPhrase}</span>
-        {identity.status === "open" && onUpdate && repoFullName ? (
-          <Dropdown
-            popupVisible={branchOpen}
-            onVisibleChange={openBranches}
-            position="bottom-start"
-            getPopupContainer={() => document.body}
-            avoidViewportOverflow
-            options={[
-              ...branches.map((branch) => ({ label: branch, value: branch })),
-              ...(branchSearch.trim() &&
-              !branches.some((branch) => branch === branchSearch.trim())
-                ? [
-                    {
-                      label: t("git.pr.flow.useBranch", {
-                        branch: branchSearch.trim(),
-                      }),
-                      value: branchSearch.trim(),
-                    },
-                  ]
-                : []),
-            ]}
-            value={baseBranch}
-            showSearch
-            onSearch={setBranchSearch}
-            loading={branchLoading}
-            searchPlaceholder={t("git.pr.flow.findBranch")}
-            emptyContent={t("git.pr.flow.noBranches")}
-            onSelect={(value) => {
-              if (typeof value === "string") void changeBase(value);
-            }}
+      <div className="flex min-w-0 items-start gap-2">
+        <div className="min-w-0 flex-1">
+          <GitHubFlowHeader
+            testIdPrefix="pr-flow"
+            ariaLabel={t("git.pr.summary.label")}
+            title={title}
+            number={identity.number}
+            status={
+              <PrStatusBadge status={identity.status} size="sm" showIcon />
+            }
+            actor={actor}
+            unknownActorLabel={t("git.pr.unknownAuthor")}
           >
+            <span>{verbPhrase}</span>
+            {identity.status === "open" && onUpdate && repoFullName ? (
+              <Dropdown
+                popupVisible={branchOpen}
+                onVisibleChange={openBranches}
+                position="bottom-start"
+                getPopupContainer={() => document.body}
+                avoidViewportOverflow
+                options={[
+                  ...branches.map((branch) => ({
+                    label: branch,
+                    value: branch,
+                  })),
+                  ...(branchSearch.trim() &&
+                  !branches.some((branch) => branch === branchSearch.trim())
+                    ? [
+                        {
+                          label: t("git.pr.flow.useBranch", {
+                            branch: branchSearch.trim(),
+                          }),
+                          value: branchSearch.trim(),
+                        },
+                      ]
+                    : []),
+                ]}
+                value={baseBranch}
+                showSearch
+                onSearch={setBranchSearch}
+                loading={branchLoading}
+                searchPlaceholder={t("git.pr.flow.findBranch")}
+                emptyContent={t("git.pr.flow.noBranches")}
+                onSelect={(value) => {
+                  if (typeof value === "string") void changeBase(value);
+                }}
+              >
+                <Button
+                  size="inline"
+                  variant="tertiary"
+                  disabled={pending || saving}
+                  aria-label={t("git.pr.flow.changeBase")}
+                  aria-expanded={branchOpen}
+                  data-testid="pr-flow-base-branch"
+                >
+                  <BranchPill name={baseBranch} /> ▾
+                </Button>
+              </Dropdown>
+            ) : (
+              <BranchPill name={baseBranch} />
+            )}
+            <span>{t("git.pr.flow.from")}</span>
+            <BranchPill name={identity.headBranch} />
             <Button
-              size="inline"
+              size="sidebar"
+              aria-label={t("git.pr.flow.copyHeadBranch")}
+              title={t("git.pr.flow.copyHeadBranch")}
+              className="text-text-3 hover:text-text-1"
+              onClick={() => void copyHeadBranch()}
+              data-testid="pr-flow-copy-branch"
               variant="tertiary"
-              disabled={pending || saving}
-              aria-label={t("git.pr.flow.changeBase")}
-              aria-expanded={branchOpen}
-              data-testid="pr-flow-base-branch"
-            >
-              <BranchPill name={baseBranch} /> ▾
-            </Button>
-          </Dropdown>
-        ) : (
-          <BranchPill name={baseBranch} />
-        )}
-        <span>{t("git.pr.flow.from")}</span>
-        <BranchPill name={identity.headBranch} />
-        <Button
-          size="sidebar"
-          aria-label={t("git.pr.flow.copyHeadBranch")}
-          title={t("git.pr.flow.copyHeadBranch")}
-          className="text-text-3 hover:text-text-1"
-          onClick={() => void copyHeadBranch()}
-          data-testid="pr-flow-copy-branch"
-          variant="tertiary"
-          iconOnly
-          icon={
-            <HugeiconsIcon
-              icon={Copy01Icon}
-              data-icon="copy"
-              size={12}
-              strokeWidth={1.75}
-              aria-hidden
+              iconOnly
+              icon={
+                <HugeiconsIcon
+                  icon={Copy01Icon}
+                  data-icon="copy"
+                  size={12}
+                  strokeWidth={1.75}
+                  aria-hidden
+                />
+              }
             />
-          }
-        />
-        <span className="inline-flex items-center gap-1 tabular-nums">
-          <span className="text-success-6">
-            +{additions.toLocaleString("en-US")}
-          </span>
-          <span className="text-danger-6">
-            -{deletions.toLocaleString("en-US")}
-          </span>
-        </span>
-      </GitHubFlowHeader>
+            <span className="inline-flex items-center gap-1 tabular-nums">
+              <span className="text-success-6">
+                +{additions.toLocaleString("en-US")}
+              </span>
+              <span className="text-danger-6">
+                -{deletions.toLocaleString("en-US")}
+              </span>
+            </span>
+          </GitHubFlowHeader>
+        </div>
+        {onUpdate && repoFullName && !editing ? (
+          <Button
+            size="mini"
+            variant="tertiary"
+            iconOnly
+            icon={
+              <HugeiconsIcon
+                icon={Pen01Icon}
+                data-icon="pencil"
+                size={14}
+                strokeWidth={1.75}
+                aria-hidden
+              />
+            }
+            aria-label={t("git.pr.flow.editTitleDescription")}
+            title={t("git.pr.flow.editTitleDescription")}
+            disabled={pending}
+            onClick={() => {
+              setEditTitle(title);
+              setEditBody(body);
+              setEditing(true);
+            }}
+            data-testid="pr-flow-edit"
+          />
+        ) : null}
+      </div>
       {onUpdate && repoFullName ? (
         editing ? (
           <div className="flex flex-col gap-2 rounded-lg border border-border-1 bg-fill-1 p-3">
@@ -323,22 +357,7 @@ export function PrFlowHeader({
               </Button>
             </div>
           </div>
-        ) : (
-          <Button
-            size="inline"
-            variant="ghost"
-            className="self-start"
-            disabled={pending}
-            onClick={() => {
-              setEditTitle(title);
-              setEditBody(body);
-              setEditing(true);
-            }}
-            data-testid="pr-flow-edit"
-          >
-            {t("git.pr.flow.editTitleDescription")}
-          </Button>
-        )
+        ) : null
       ) : null}
     </div>
   );

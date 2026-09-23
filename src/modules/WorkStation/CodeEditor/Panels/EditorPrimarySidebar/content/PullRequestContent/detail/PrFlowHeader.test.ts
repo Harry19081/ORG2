@@ -188,11 +188,15 @@ describe("PrFlowHeader", () => {
         })
       )
     );
-    act(() =>
-      container
-        .querySelector<HTMLButtonElement>("[data-testid='pr-flow-edit']")
-        ?.click()
+    const editButton = container.querySelector<HTMLButtonElement>(
+      "[data-testid='pr-flow-edit']"
     );
+    expect(editButton?.getAttribute("aria-label")).toBe(
+      "Edit title and description"
+    );
+    expect(editButton?.querySelector('[data-icon="pencil"]')).not.toBeNull();
+    expect(editButton?.textContent).toBe("");
+    act(() => editButton?.click());
     const title = container.querySelector<HTMLInputElement>("#pr-edit-title");
     const body = container.querySelector<HTMLTextAreaElement>("#pr-edit-body");
     expect(title?.value).toBe("Original");
