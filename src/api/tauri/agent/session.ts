@@ -6,6 +6,9 @@
 import { invoke } from "@tauri-apps/api/core";
 
 import { rpc } from "@src/api/tauri/rpc";
+// From the schema that owns it. Re-exporting it through ./types made that
+// module and the schema import each other.
+import type { PendingQuestionBatch } from "@src/api/tauri/rpc/schemas/agentSession";
 import type { CliAgentType, NativeHarnessType } from "@src/api/types/keys";
 import { requireAgentOrgEnabled } from "@src/config/agentOrgAvailability";
 import type { OrgMemberLaunchOverride } from "@src/modules/MainApp/AgentOrgs/types";
@@ -17,7 +20,6 @@ import type {
   HousekeeperContextCompactionState,
   ManualCompactResult,
   ModeSwitchChoice,
-  PendingQuestionBatch,
   PermissionResponseValue,
   PlanApprovalChoice,
   RevertResult,

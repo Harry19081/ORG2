@@ -26,6 +26,7 @@ pub mod openai_compat;
 pub mod openai_policy;
 pub mod openai_responses;
 pub mod registry;
+pub mod request_priority;
 pub mod reliable;
 pub mod responses_common;
 pub mod thinking_mode;

@@ -98,10 +98,14 @@ impl LLMProvider for AuxiliaryUsageProvider<'_> {
         max_tokens: u32,
         temperature: f32,
     ) -> Result<LLMResponse, ProviderError> {
-        let result = self
-            .inner()
-            .chat(messages, tools, model, max_tokens, temperature)
-            .await;
+        let result = crate::providers::request_priority::auxiliary(self.inner().chat(
+            messages,
+            tools,
+            model,
+            max_tokens,
+            temperature,
+        ))
+        .await;
         self.record(model, &result).await;
         result
     }
@@ -114,10 +118,15 @@ impl LLMProvider for AuxiliaryUsageProvider<'_> {
         temperature: f32,
         options: ChatOptions,
     ) -> Result<LLMResponse, ProviderError> {
-        let result = self
-            .inner()
-            .chat_with_options(messages, tools, model, max_tokens, temperature, options)
-            .await;
+        let result = crate::providers::request_priority::auxiliary(self.inner().chat_with_options(
+            messages,
+            tools,
+            model,
+            max_tokens,
+            temperature,
+            options,
+        ))
+        .await;
         self.record(model, &result).await;
         result
     }
@@ -131,18 +140,16 @@ impl LLMProvider for AuxiliaryUsageProvider<'_> {
         on_delta: &(dyn Fn(StreamDelta) + Send + Sync),
         cancel_flag: Option<&AtomicBool>,
     ) -> Result<LLMResponse, ProviderError> {
-        let result = self
-            .inner()
-            .chat_streaming(
-                messages,
-                tools,
-                model,
-                max_tokens,
-                temperature,
-                on_delta,
-                cancel_flag,
-            )
-            .await;
+        let result = crate::providers::request_priority::auxiliary(self.inner().chat_streaming(
+            messages,
+            tools,
+            model,
+            max_tokens,
+            temperature,
+            on_delta,
+            cancel_flag,
+        ))
+        .await;
         self.record(model, &result).await;
         result
     }
@@ -220,6 +227,50 @@ mod tests {
     }
     fn fake(responses: Vec<Result<LLMResponse, ProviderError>>) -> Arc<dyn LLMProvider> {
         Arc::new(Fake(Mutex::new(responses.into())))
+    }
+
+    #[tokio::test]
+    async fn every_auxiliary_call_marks_only_its_own_transport_request() {
+        struct IntentProbe(Arc<Mutex<Vec<bool>>>);
+        #[async_trait]
+        impl LLMProvider for IntentProbe {
+            async fn chat(
+                &self,
+                _: &[Value],
+                _: Option<&[Value]>,
+                _: &str,
+                _: u32,
+                _: f32,
+            ) -> Result<LLMResponse, ProviderError> {
+                tokio::task::yield_now().await;
+                self.0
+                    .lock()
+                    .unwrap()
+                    .push(crate::providers::request_priority::is_auxiliary());
+                Ok(LLMResponse::text("ok"))
+            }
+            fn default_model(&self) -> &str {
+                "fixture"
+            }
+            fn provider_name(&self) -> &str {
+                "fixture"
+            }
+        }
+        let observed = Arc::new(Mutex::new(Vec::new()));
+        let shared: Arc<dyn LLMProvider> = Arc::new(IntentProbe(observed.clone()));
+        let auxiliary =
+            AuxiliaryUsageProvider::owned(shared.clone(), "fixture", "skill_prefetch", None);
+        auxiliary.chat(&[], None, "fixture", 1, 0.0).await.unwrap();
+        auxiliary
+            .chat_with_options(&[], None, "fixture", 1, 0.0, ChatOptions::default())
+            .await
+            .unwrap();
+        auxiliary
+            .chat_streaming(&[], None, "fixture", 1, 0.0, &|_| {}, None)
+            .await
+            .unwrap();
+        shared.chat(&[], None, "fixture", 1, 0.0).await.unwrap();
+        assert_eq!(*observed.lock().unwrap(), [true, true, true, false]);
     }
 
     #[tokio::test]

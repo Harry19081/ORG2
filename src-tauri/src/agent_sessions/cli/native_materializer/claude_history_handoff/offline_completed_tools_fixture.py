@@ -13,7 +13,7 @@ import tempfile
 import threading
 import uuid
 
-CLI = '/opt/homebrew/lib/node_modules/@anthropic-ai/claude-code/bin/claude.exe'
+CLI = os.environ.get('ORG2_CLAUDE_CLI', '/opt/homebrew/lib/node_modules/@anthropic-ai/claude-code/bin/claude.exe')
 SANDBOX = '(version 1)(allow default)(deny network-outbound)(allow network-outbound (remote ip "localhost:*"))'
 
 

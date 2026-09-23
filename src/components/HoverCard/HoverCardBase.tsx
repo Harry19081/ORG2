@@ -20,12 +20,12 @@ import {
   scheduleClose,
   useHoverCardState,
 } from "./singletonStore";
+import type { HoverCardPosition } from "./singletonStore";
 import { HOVER_CARD } from "./tokens";
 
-export type HoverCardPosition =
-  | "bottom-start"
-  | "right-start"
-  | "right-or-bottom";
+// Re-exported so existing importers keep their path; declared in
+// singletonStore, which HoverCardBase already depends on.
+export type { HoverCardPosition };
 
 const DEFAULT_MOUSE_ENTER_DELAY_MS = 500;
 const DEFAULT_MOUSE_LEAVE_DELAY_MS = 100;

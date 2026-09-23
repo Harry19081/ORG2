@@ -21,7 +21,12 @@ import {
   marketOwnerKeyAtom,
 } from "./identity";
 import { marketProfileLabel } from "./profileLabels";
-import type { ManagedService } from "./rpc";
+// Declared in ./profileTypes so usageAuthorization can name them without
+// importing this module; re-exported here so existing importers keep working.
+import type {
+  MarketExecutionProfile,
+  MarketProfileAgent,
+} from "./profileTypes";
 import {
   type Connection,
   type Entry,
@@ -30,6 +35,8 @@ import {
   prepareSessionSource,
 } from "./rpc";
 import { authorizedProfile } from "./usageAuthorization";
+
+export type { MarketExecutionProfile, MarketProfileAgent };
 
 // Match the existing foreground native-owner refresh budget. This bounds only
 // the picker wait: the shared authorization/catalog operation stays single-flight.
@@ -68,7 +75,6 @@ function waitForCatalog<T>(work: Promise<T>, signal: AbortSignal): Promise<T> {
   });
 }
 
-export type MarketProfileAgent = "claude_code" | "codex";
 export type MarketConnectionTarget =
   | MarketProfileAgent
   | "claude_desktop"
@@ -98,23 +104,6 @@ export interface ConnectionOption {
   duplicateOrdinal: number | null;
   duplicateCount: number;
   profile: MarketExecutionProfile;
-}
-
-/**
- * A managed Market service adapted to ORG2's existing execution-profile UI.
- * It deliberately contains no API key. `connection` plus the entitlement
- * identifiers are only used to ask the backend for an opaque credentialSource.
- */
-export interface MarketExecutionProfile {
-  managed?: ManagedService;
-  id: string;
-  label: string;
-  connection: Connection;
-  entitlementWorkspaceId: string;
-  entitlementId: string;
-  serviceId: string;
-  modelsByAgent: Record<MarketProfileAgent, string[]>;
-  expiresAt: number | null;
 }
 
 export interface MarketProfileSource {

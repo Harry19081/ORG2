@@ -1,6 +1,6 @@
 import { MARKET_PROFILES_CHANGED_EVENT } from "./events";
 import { captureMarketOwner } from "./identity";
-import type { MarketExecutionProfile } from "./marketProfiles";
+import type { MarketExecutionProfile } from "./profileTypes";
 import type { ManagedService } from "./rpc";
 import { activateManagedService } from "./rpc";
 

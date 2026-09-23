@@ -1,6 +1,9 @@
 //! Native SDE adapter. Persist only the selector; resolve short-lived credentials
 //! at each request through the same bounded authorization source as App Connection.
-use super::source::Selection;
+use super::{
+    native_admission::{self, Admission, CapacitySource},
+    source::Selection,
+};
 use crate::dynamic_credentials::Source;
 use agent_core::providers::{
     anthropic_native::{AnthropicAuthMode, AnthropicClient},
@@ -34,12 +37,19 @@ struct NativeProvider {
     wire_model: String,
     protocol: String,
     source: Arc<dyn Source>,
+    capacity_source: Arc<dyn CapacitySource>,
+    metadata: market_connect::ConnectionMetadata,
+    admission: Arc<Admission>,
     // One delegate per live native runtime. Tokens remain memory-only; source
     // failures never reach this cache, and a rotated token replaces it.
     delegate: tokio::sync::Mutex<Option<(String, Arc<dyn LLMProvider>)>>,
 }
 impl NativeProvider {
-    fn new(key: &str, model: &str, source: Arc<dyn Source>) -> Result<Self, ProviderError> {
+    fn new<S: Source + CapacitySource + 'static>(
+        key: &str,
+        model: &str,
+        source: Arc<S>,
+    ) -> Result<Self, ProviderError> {
         let selection = Selection::parse(key, "rust_agent").map_err(ProviderError::AuthError)?;
         let wire_model = selection
             .model
@@ -54,6 +64,13 @@ impl NativeProvider {
             model: model.into(),
             wire_model,
             protocol: selection.native_protocol.unwrap(),
+            admission: native_admission::for_buyer(
+                market_connect::control_origin()
+                    .map_err(|code| ProviderError::AuthError(code.into()))?,
+                &selection.metadata.identity_user_id,
+            )?,
+            metadata: selection.metadata,
+            capacity_source: source.clone(),
             source,
             delegate: tokio::sync::Mutex::new(None),
         })
@@ -112,6 +129,15 @@ impl LLMProvider for NativeProvider {
         max_tokens: u32,
         temperature: f32,
     ) -> Result<LLMResponse, ProviderError> {
+        let _permit = self
+            .admission
+            .acquire(
+                self.capacity_source.as_ref(),
+                &self.metadata,
+                agent_core::providers::request_priority::is_auxiliary(),
+                None,
+            )
+            .await?;
         self.provider(model)
             .await?
             .chat(messages, tools, model, max_tokens, temperature)
@@ -126,6 +152,15 @@ impl LLMProvider for NativeProvider {
         temperature: f32,
         options: ChatOptions,
     ) -> Result<LLMResponse, ProviderError> {
+        let _permit = self
+            .admission
+            .acquire(
+                self.capacity_source.as_ref(),
+                &self.metadata,
+                agent_core::providers::request_priority::is_auxiliary(),
+                None,
+            )
+            .await?;
         self.provider(model)
             .await?
             .chat_with_options(messages, tools, model, max_tokens, temperature, options)
@@ -144,6 +179,15 @@ impl LLMProvider for NativeProvider {
         if cancel_flag.is_some_and(|flag| flag.load(std::sync::atomic::Ordering::Relaxed)) {
             return Err(ProviderError::Cancelled);
         }
+        let _permit = self
+            .admission
+            .acquire(
+                self.capacity_source.as_ref(),
+                &self.metadata,
+                agent_core::providers::request_priority::is_auxiliary(),
+                cancel_flag,
+            )
+            .await?;
         self.provider(model)
             .await?
             .chat_streaming(
@@ -178,6 +222,15 @@ mod tests {
     struct Credentials {
         base: String,
         tokens: std::sync::Mutex<VecDeque<Result<String, String>>>,
+    }
+    #[async_trait]
+    impl CapacitySource for Credentials {
+        async fn buyer_capacity(
+            &self,
+            _: &market_connect::ConnectionMetadata,
+        ) -> Result<usize, String> {
+            Ok(2)
+        }
     }
     impl Source for Credentials {
         fn namespace(&self) -> &'static str {
@@ -292,7 +345,7 @@ mod tests {
             ),
         ] {
             let (base, capture) = capture_server(2, response).await;
-            let source: Arc<dyn Source> = Arc::new(Credentials {
+            let source = Arc::new(Credentials {
                 base,
                 tokens: std::sync::Mutex::new(VecDeque::from([
                     Ok("token-first".into()),

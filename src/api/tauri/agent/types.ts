@@ -110,8 +110,6 @@ export interface SessionMessage {
   compactFromSequence?: number | null;
 }
 
-export type { PendingQuestionBatch } from "../rpc/schemas/agentSession";
-
 export interface TodoItem {
   id: string;
   content: string;
