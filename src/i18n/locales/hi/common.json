@@ -1272,7 +1272,16 @@
         "mergedCommitsInto_other": "ने {{count}} कमिट मर्ज किए, लक्ष्य:",
         "from": "स्रोत:",
         "copyHeadBranch": "head ब्रांच का नाम कॉपी करें",
-        "branchCopied": "ब्रांच का नाम कॉपी किया गया"
+        "branchCopied": "ब्रांच का नाम कॉपी किया गया",
+        "findBranch": "ब्रांच खोजें…",
+        "useBranch": "{{branch}} का उपयोग करें",
+        "noBranches": "कोई ब्रांच नहीं मिली",
+        "changeBase": "लक्ष्य ब्रांच बदलें",
+        "title": "शीर्षक",
+        "description": "विवरण",
+        "save": "बदलाव सहेजें",
+        "cancel": "रद्द करें",
+        "editTitleDescription": "शीर्षक और विवरण संपादित करें"
       },
       "sidebar": {
         "reviewers": "समीक्षक",

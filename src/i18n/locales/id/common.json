@@ -1272,7 +1272,16 @@
         "mergedCommitsInto_other": "menggabungkan {{count}} commit ke",
         "from": "dari",
         "copyHeadBranch": "Salin nama branch head",
-        "branchCopied": "Nama branch disalin"
+        "branchCopied": "Nama branch disalin",
+        "findBranch": "Cari branch…",
+        "useBranch": "Gunakan {{branch}}",
+        "noBranches": "Tidak ada branch ditemukan",
+        "changeBase": "Ubah branch tujuan",
+        "title": "Judul",
+        "description": "Deskripsi",
+        "save": "Simpan perubahan",
+        "cancel": "Batal",
+        "editTitleDescription": "Edit judul dan deskripsi"
       },
       "sidebar": {
         "reviewers": "Peninjau",

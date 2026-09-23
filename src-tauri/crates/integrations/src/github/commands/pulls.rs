@@ -16,7 +16,10 @@ mod reviews;
 
 pub use checks::{github_get_checks, GitHubCheckRun, GitHubChecksSummary, GitHubStatusContext};
 pub use deployments::{github_get_deployments, GitHubDeployment, GitHubDeploymentsSummary};
-pub use detail::{github_get_pr, github_list_pr_commits, github_list_pr_files};
+pub use detail::{
+    github_get_pr, github_list_pr_base_branches, github_list_pr_commits, github_list_pr_files,
+    github_update_pr,
+};
 pub use list_search::{
     github_create_pr, github_find_pull_request, github_list_prs, github_update_pr_state,
     CreatePRRequest, FindPRResponse, OpenPRItem, PRResponse, PullRequestCiStatus,
@@ -37,9 +40,10 @@ pub use reviews::{
 pub use checks::{__cmd__github_get_checks, __tauri_command_name_github_get_checks};
 pub use deployments::{__cmd__github_get_deployments, __tauri_command_name_github_get_deployments};
 pub use detail::{
-    __cmd__github_get_pr, __cmd__github_list_pr_commits, __cmd__github_list_pr_files,
-    __tauri_command_name_github_get_pr, __tauri_command_name_github_list_pr_commits,
-    __tauri_command_name_github_list_pr_files,
+    __cmd__github_get_pr, __cmd__github_list_pr_base_branches, __cmd__github_list_pr_commits,
+    __cmd__github_list_pr_files, __cmd__github_update_pr, __tauri_command_name_github_get_pr,
+    __tauri_command_name_github_list_pr_base_branches, __tauri_command_name_github_list_pr_commits,
+    __tauri_command_name_github_list_pr_files, __tauri_command_name_github_update_pr,
 };
 pub use list_search::{
     __cmd__github_create_pr, __cmd__github_find_pull_request, __cmd__github_list_prs,

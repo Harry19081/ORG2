@@ -1389,7 +1389,16 @@
         "mergedCommitsInto_other": "слито {{count}} коммита в",
         "from": "из",
         "copyHeadBranch": "Скопировать имя ветки",
-        "branchCopied": "Имя ветки скопировано"
+        "branchCopied": "Имя ветки скопировано",
+        "findBranch": "Найти ветку…",
+        "useBranch": "Использовать {{branch}}",
+        "noBranches": "Ветки не найдены",
+        "changeBase": "Изменить целевую ветку",
+        "title": "Заголовок",
+        "description": "Описание",
+        "save": "Сохранить изменения",
+        "cancel": "Отмена",
+        "editTitleDescription": "Изменить заголовок и описание"
       },
       "sidebar": {
         "reviewers": "Рецензенты",

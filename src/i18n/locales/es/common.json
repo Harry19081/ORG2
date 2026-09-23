@@ -1389,7 +1389,16 @@
         "mergedCommitsInto_other": "fusionó {{count}} commits en",
         "from": "desde",
         "copyHeadBranch": "Copiar nombre de la rama",
-        "branchCopied": "Nombre de la rama copiado"
+        "branchCopied": "Nombre de la rama copiado",
+        "findBranch": "Buscar una rama…",
+        "useBranch": "Usar {{branch}}",
+        "noBranches": "No se encontraron ramas",
+        "changeBase": "Cambiar rama de destino",
+        "title": "Título",
+        "description": "Descripción",
+        "save": "Guardar cambios",
+        "cancel": "Cancelar",
+        "editTitleDescription": "Editar título y descripción"
       },
       "sidebar": {
         "reviewers": "Revisores",

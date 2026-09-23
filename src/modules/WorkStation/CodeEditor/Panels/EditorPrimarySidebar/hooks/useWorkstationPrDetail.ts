@@ -23,9 +23,14 @@ import {
   isPrDetailStale,
   prDetailKey,
   setCachedPrDetail,
+  updateCachedPrListItem,
 } from "@src/services/git/githubListCache";
 import { parseGithubRepoFullName } from "@src/services/git/operations/createPullRequest";
 import { invalidatePullRequestHeadChecks } from "@src/services/git/pullRequestHeadChecks";
+import {
+  workstationAllOpenPrsAtomFamily,
+  workstationRepoScopeKey,
+} from "@src/store/workstation/codeEditor/workstationPrAtom";
 import {
   type PrIdentity,
   initialSelectedPrState,
@@ -63,6 +68,9 @@ export function useWorkstationPrDetail({
 }: UseWorkstationPrDetailOptions) {
   const scopeKey = workstationPrScopeKey(repoId, repoPath, pr?.number);
   const setSelectedPr = useSetAtom(workstationSelectedPrAtomFamily(scopeKey));
+  const setOpenPrs = useSetAtom(
+    workstationAllOpenPrsAtomFamily(workstationRepoScopeKey(repoId, repoPath))
+  );
   const setCallbacks = useSetAtom(
     workstationPrDetailCallbackAtomFamily(scopeKey)
   );
@@ -81,6 +89,22 @@ export function useWorkstationPrDetail({
   const latestHeadShaRef = useRef<string | null>(null);
   const latestRequestedReviewersRef = useRef<GitHubIssueUser[]>([]);
   const latestAuthorLoginRef = useRef<string | null>(null);
+
+  const onMetadataUpdated = useCallback(
+    (prNumber: number, changes: { title?: string; base?: string }) => {
+      const patch = {
+        ...(changes.title !== undefined ? { title: changes.title } : {}),
+        ...(changes.base !== undefined ? { base_branch: changes.base } : {}),
+      };
+      setOpenPrs((current) =>
+        current.map((item) =>
+          item.number === prNumber ? { ...item, ...patch } : item
+        )
+      );
+      updateCachedPrListItem(repoPath, prNumber, patch);
+    },
+    [repoPath, setOpenPrs]
+  );
 
   // ── Resolve owner/repo from the origin remote ─────────────────────────────
   const [repoFullName, setRepoFullName] = useState<string | null>(null);
@@ -246,6 +270,7 @@ export function useWorkstationPrDetail({
     setPullRequestAutoMerge,
     updatePullRequestState,
     updatePullRequestDraft,
+    updatePullRequest,
     updateRequestedReviewers,
     updateAssignees,
     updateLabels,
@@ -262,6 +287,7 @@ export function useWorkstationPrDetail({
     reviewerCandidates,
     assigneeCandidates,
     labelCandidates,
+    onMetadataUpdated,
   });
 
   const refresh = useCallback(() => {
@@ -295,6 +321,7 @@ export function useWorkstationPrDetail({
       mergePullRequest,
       setPullRequestAutoMerge,
       updatePullRequestDraft,
+      updatePullRequest,
       updatePullRequestState,
       updateRequestedReviewers,
       updateAssignees,
@@ -309,6 +336,7 @@ export function useWorkstationPrDetail({
     mergePullRequest,
     setPullRequestAutoMerge,
     updatePullRequestDraft,
+    updatePullRequest,
     updatePullRequestState,
     updateRequestedReviewers,
     updateAssignees,
@@ -332,6 +360,7 @@ export function useWorkstationPrDetail({
         mergePullRequest: null,
         setPullRequestAutoMerge: null,
         updatePullRequestDraft: null,
+        updatePullRequest: null,
         updatePullRequestState: null,
         updateRequestedReviewers: null,
         updateAssignees: null,
@@ -351,6 +380,7 @@ export function useWorkstationPrDetail({
       mergePullRequest,
       setPullRequestAutoMerge,
       updatePullRequestDraft,
+      updatePullRequest,
       updatePullRequestState,
       updateRequestedReviewers,
       updateAssignees,
@@ -378,6 +408,7 @@ export function useWorkstationPrDetail({
       mergePullRequest,
       setPullRequestAutoMerge,
       updatePullRequestDraft,
+      updatePullRequest,
       updatePullRequestState,
       updateRequestedReviewers,
       updateAssignees,

@@ -1223,7 +1223,16 @@
         "mergedCommitsInto_other": "已将 {{count}} 个提交合并到",
         "from": "来自",
         "copyHeadBranch": "复制分支名",
-        "branchCopied": "已复制分支名"
+        "branchCopied": "已复制分支名",
+        "findBranch": "查找分支…",
+        "useBranch": "使用 {{branch}}",
+        "noBranches": "未找到分支",
+        "changeBase": "更改目标分支",
+        "title": "标题",
+        "description": "描述",
+        "save": "保存更改",
+        "cancel": "取消",
+        "editTitleDescription": "编辑标题和描述"
       },
       "sidebar": {
         "reviewers": "评审人",

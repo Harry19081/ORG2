@@ -1389,7 +1389,16 @@
         "mergedCommitsInto_other": "已將 {{count}} 個提交合併到",
         "from": "來自",
         "copyHeadBranch": "複製分支名稱",
-        "branchCopied": "已複製分支名稱"
+        "branchCopied": "已複製分支名稱",
+        "findBranch": "搜尋分支…",
+        "useBranch": "使用 {{branch}}",
+        "noBranches": "找不到分支",
+        "changeBase": "變更目標分支",
+        "title": "標題",
+        "description": "描述",
+        "save": "儲存變更",
+        "cancel": "取消",
+        "editTitleDescription": "編輯標題與描述"
       },
       "sidebar": {
         "reviewers": "審查者",
