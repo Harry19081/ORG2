@@ -288,9 +288,9 @@ describe("WorkItemAttachmentControl", () => {
       expect(
         dialog
           ?.querySelector(
-            '[data-testid="work-item-picker-ci-github_pr:https://github.com/acme/app/pull/44"] .animate-pulse'
+            '[data-testid="work-item-picker-ci-github_pr:https://github.com/acme/app/pull/44"] [data-icon="pending-dot"] .animate-agent-pulse'
           )
-          ?.classList.contains("animate-pulse")
+          ?.classList.contains("bg-warning-6")
       ).toBe(true);
       expect(
         dialog?.querySelector(

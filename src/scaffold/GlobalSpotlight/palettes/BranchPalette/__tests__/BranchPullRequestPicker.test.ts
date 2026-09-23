@@ -250,11 +250,17 @@ it.each(["spotlight", "dropdown"] as const)(
           glyphs[index]
         );
       } else {
-        const dot = indicator.querySelector(".bg-current");
+        const dot = indicator.querySelector<HTMLSpanElement>(
+          '[data-icon="pending-dot"]'
+        );
         expect(dot).not.toBeNull();
-        expect(dot?.parentElement?.style.width).toBe("16px");
-        expect(dot?.parentElement?.style.height).toBe("16px");
-        expect(dot?.parentElement?.classList.contains("justify-center")).toBe(
+        expect(dot?.style.width).toBe("16px");
+        expect(dot?.style.height).toBe("16px");
+        expect(dot?.classList.contains("justify-center")).toBe(true);
+        expect(
+          dot?.firstElementChild?.classList.contains("animate-agent-pulse")
+        ).toBe(true);
+        expect(dot?.firstElementChild?.classList.contains("bg-warning-6")).toBe(
           true
         );
       }
