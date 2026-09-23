@@ -30,7 +30,7 @@ interface SpotlightSelectTriggerProps {
   /** Whether the spotlight palette is currently open (drives focus ring). */
   active?: boolean;
   /** @default 'default' */
-  size?: "mini" | "small" | "default" | "large";
+  size?: "mini" | "small" | "default";
   disabled?: boolean;
   error?: boolean;
   /** Optional left-edge icon (e.g. ModelIcon). */
@@ -45,9 +45,8 @@ interface SpotlightSelectTriggerProps {
 
 /**
  * Visual parity with `Select` is achieved by reusing the same CSS classes
- * (`select-wrapper`, `select-selector`, `select-size-*`). The wrapper is a
- * native `<button>` so the trigger is keyboard-reachable and dispatches
- * Enter/Space without bespoke handling.
+ * (`select-wrapper`, `select-selector`, `select-size-*`). The shared Button
+ * keeps the trigger keyboard-reachable without bespoke handling.
  */
 const SpotlightSelectTrigger = forwardRef<
   HTMLButtonElement,

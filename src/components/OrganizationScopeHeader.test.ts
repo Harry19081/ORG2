@@ -113,7 +113,7 @@ describe("OrganizationScopeHeader", () => {
   it("keeps the title-row selector permanently chromeless", () => {
     const markup = render("cloud:org-1", LOCAL_AND_CLOUD);
 
-    expect(markup).toContain("select-size-large");
+    expect(markup).toContain("select-size-default");
     expect(markup).toContain("select-bare");
     expect(markup).toContain("select-title-row");
     expect(markup).not.toContain("select-ghost");

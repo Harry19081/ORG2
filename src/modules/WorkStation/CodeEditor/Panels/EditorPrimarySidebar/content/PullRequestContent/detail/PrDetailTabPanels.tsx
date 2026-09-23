@@ -65,6 +65,7 @@ export function PrDetailTabPanels({
     mergePullRequest,
     setPullRequestAutoMerge,
     updatePullRequestDraft,
+    updatePullRequest,
     updatePullRequestState,
     prActionPending,
   } = controller;
@@ -117,6 +118,9 @@ export function PrDetailTabPanels({
                 baseBranch={baseBranch}
                 commitCount={state.commits.length}
                 files={state.files}
+                repoFullName={repoFullName}
+                pending={prActionPending}
+                onUpdate={updatePullRequest}
               />
             }
             detail={state.detail}

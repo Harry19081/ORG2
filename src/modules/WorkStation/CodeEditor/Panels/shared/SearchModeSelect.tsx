@@ -31,7 +31,7 @@ export interface SearchModeSelectProps {
   /** Whether the selector is disabled */
   disabled?: boolean;
   /** Size variant */
-  size?: "small" | "default" | "large";
+  size?: "small" | "default";
   /** Visual appearance - "default" has bg/border, "ghost" has none */
   appearance?: ControlAppearance;
   /** Background surface token for the selector box */

@@ -58,7 +58,7 @@ interface TextareaProps extends Omit<
    * Textarea size
    * @default 'default'
    */
-  size?: "mini" | "small" | "default" | "large";
+  size?: "mini" | "small" | "default";
 
   /**
    * Error state

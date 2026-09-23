@@ -30,7 +30,7 @@ export interface SelectProps {
   /** @default 'Select' */
   placeholder?: ReactNode;
   /** @default 'default' */
-  size?: "mini" | "small" | "default" | "large";
+  size?: "mini" | "small" | "default";
   disabled?: boolean;
   error?: boolean;
   loading?: boolean;

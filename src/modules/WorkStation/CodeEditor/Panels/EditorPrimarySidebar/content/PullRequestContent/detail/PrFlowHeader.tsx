@@ -6,15 +6,17 @@
  * ("{author} wants to merge {n} commits into {base} from {head}") with the
  * branch names as code pills, a copy-branch action, and the +/− diff stat.
  */
-import React, { useCallback } from "react";
+import React, { useCallback, useEffect, useRef, useState } from "react";
 import { useTranslation } from "react-i18next";
 
-import type { PrFile } from "@src/api/tauri/github";
+import { type PrFile, listPRBaseBranchesLocal } from "@src/api/tauri/github";
 import Button from "@src/components/Button";
+import Dropdown from "@src/components/Dropdown";
+import Input from "@src/components/Input";
 import Message from "@src/components/Message";
 import PrStatusBadge from "@src/components/PrStatusBadge";
 import GitHubFlowHeader from "@src/features/GitHubWork/GitHubFlowHeader";
-import { Copy01Icon, HugeiconsIcon } from "@src/icons";
+import { Copy01Icon, HugeiconsIcon, Pen01Icon } from "@src/icons";
 import type { PrIdentity } from "@src/store/workstation/codeEditor/workstationSelectedPrAtom";
 import { copyText } from "@src/util/data/clipboard";
 
@@ -64,6 +66,9 @@ interface PrFlowHeaderProps {
   commitCount: number;
   /** Fallback source for the +/− diff stat when the detail payload has none. */
   files: PrFile[];
+  repoFullName?: string | null;
+  pending?: boolean;
+  onUpdate?: (changes: { title?: string; base?: string }) => Promise<void>;
 }
 
 export function PrFlowHeader({
@@ -72,8 +77,32 @@ export function PrFlowHeader({
   baseBranch,
   commitCount,
   files,
+  repoFullName,
+  pending = false,
+  onUpdate,
 }: PrFlowHeaderProps): React.ReactNode {
   const { t } = useTranslation("common");
+  const [branches, setBranches] = useState<string[]>([]);
+  const [branchLoading, setBranchLoading] = useState(false);
+  const [branchOpen, setBranchOpen] = useState(false);
+  const [branchSearch, setBranchSearch] = useState("");
+  const branchRequestRef = useRef(0);
+  const [editing, setEditing] = useState(false);
+  const [editTitle, setEditTitle] = useState("");
+  const [saving, setSaving] = useState(false);
+  const title =
+    typeof detail?.title === "string" ? detail.title : identity.title;
+
+  useEffect(() => {
+    branchRequestRef.current += 1;
+    setBranchOpen(false);
+    setBranchSearch("");
+    setBranches([]);
+    setBranchLoading(false);
+    return () => {
+      branchRequestRef.current += 1;
+    };
+  }, [repoFullName, identity.number]);
   const author = readActor(detail, "user");
   const merged = identity.status === "merged";
   // Merged PRs credit the merger, matching GitHub's flow sentence.
@@ -105,18 +134,173 @@ export function PrFlowHeader({
         defaultValue_other: "wants to merge {{count}} commits into",
       });
 
+  const openBranches = useCallback(
+    (visible: boolean) => {
+      setBranchOpen(visible);
+      if (!visible || !repoFullName) {
+        branchRequestRef.current += 1;
+        setBranchSearch("");
+        setBranchLoading(false);
+        return;
+      }
+      const request = ++branchRequestRef.current;
+      setBranches([]);
+      setBranchSearch("");
+      setBranchLoading(true);
+      void listPRBaseBranchesLocal(repoFullName)
+        .then((items) => {
+          if (branchRequestRef.current === request) setBranches(items);
+        })
+        .catch((error: unknown) => {
+          if (branchRequestRef.current === request)
+            Message.error(
+              error instanceof Error ? error.message : String(error)
+            );
+        })
+        .finally(() => {
+          if (branchRequestRef.current === request) setBranchLoading(false);
+        });
+    },
+    [repoFullName]
+  );
+
+  const changeBase = useCallback(
+    async (base: string) => {
+      if (!onUpdate || base === baseBranch) return;
+      await onUpdate({ base });
+      setBranchOpen(false);
+    },
+    [onUpdate, baseBranch]
+  );
+
+  const saveTitle = useCallback(
+    async (value: string) => {
+      const nextTitle = value.trim();
+      if (!onUpdate || !nextTitle) return;
+      if (nextTitle === title) {
+        setEditing(false);
+        return;
+      }
+      setSaving(true);
+      try {
+        await onUpdate({ title: nextTitle });
+        setEditing(false);
+      } catch (error) {
+        Message.error(error instanceof Error ? error.message : String(error));
+      } finally {
+        setSaving(false);
+      }
+    },
+    [onUpdate, title]
+  );
+
   return (
     <GitHubFlowHeader
       testIdPrefix="pr-flow"
       ariaLabel={t("git.pr.summary.label")}
-      title={identity.title}
+      title={title}
+      titleEditor={
+        editing ? (
+          <Input
+            id="pr-edit-title"
+            aria-label={t("git.pr.flow.title")}
+            value={editTitle}
+            onChange={setEditTitle}
+            onConfirm={(value) => void saveTitle(value)}
+            onCancel={() => setEditing(false)}
+            confirmDisabled={!editTitle.trim() || pending}
+            confirmLoading={saving}
+            size="default"
+            className="min-w-0 flex-1"
+            autoFocus
+          />
+        ) : undefined
+      }
+      titleAction={
+        onUpdate && repoFullName && !editing ? (
+          <Button
+            size="mini"
+            variant="tertiary"
+            iconOnly
+            icon={
+              <HugeiconsIcon
+                icon={Pen01Icon}
+                data-icon="pencil"
+                size={14}
+                strokeWidth={1.75}
+                aria-hidden
+              />
+            }
+            aria-label={t("git.pr.flow.editTitle")}
+            title={t("git.pr.flow.editTitle")}
+            disabled={pending}
+            onClick={() => {
+              setEditTitle(title);
+              setEditing(true);
+            }}
+            data-testid="pr-flow-edit"
+          />
+        ) : undefined
+      }
       number={identity.number}
       status={<PrStatusBadge status={identity.status} size="sm" showIcon />}
       actor={actor}
       unknownActorLabel={t("git.pr.unknownAuthor")}
     >
       <span>{verbPhrase}</span>
-      <BranchPill name={baseBranch} />
+      {identity.status === "open" && onUpdate && repoFullName ? (
+        <Dropdown
+          popupVisible={branchOpen}
+          onVisibleChange={openBranches}
+          position="bottom-start"
+          getPopupContainer={() => document.body}
+          avoidViewportOverflow
+          options={[
+            ...branches.map((branch) => ({
+              label: branch,
+              value: branch,
+            })),
+            ...(branchSearch.trim() &&
+            !branches.some((branch) => branch === branchSearch.trim())
+              ? [
+                  {
+                    label: t("git.pr.flow.useBranch", {
+                      branch: branchSearch.trim(),
+                    }),
+                    value: branchSearch.trim(),
+                  },
+                ]
+              : []),
+          ]}
+          value={baseBranch}
+          showSearch
+          onSearch={setBranchSearch}
+          loading={branchLoading}
+          searchPlaceholder={t("git.pr.flow.findBranch")}
+          emptyContent={t("git.pr.flow.noBranches")}
+          onSelect={(value) => {
+            if (typeof value === "string")
+              changeBase(value).catch((error: unknown) => {
+                Message.error(
+                  error instanceof Error ? error.message : String(error)
+                );
+              });
+          }}
+        >
+          <Button
+            size="inline"
+            variant="tertiary"
+            disabled={pending || saving}
+            aria-label={t("git.pr.flow.changeBase")}
+            aria-expanded={branchOpen}
+            data-testid="pr-flow-base-branch"
+          >
+            <BranchPill name={baseBranch} /> ▾
+          </Button>
+        </Dropdown>
+      ) : (
+        <BranchPill name={baseBranch} />
+      )}
       <span>{t("git.pr.flow.from")}</span>
       <BranchPill name={identity.headBranch} />
       <Button

@@ -172,7 +172,7 @@ describe("Textarea", () => {
       root.render(
         React.createElement(Textarea, {
           appearance: "bare",
-          size: "large",
+          size: "default",
           error: true,
           resize: "horizontal",
           rows: 5,
@@ -192,7 +192,7 @@ describe("Textarea", () => {
     const inner = container.querySelector<HTMLDivElement>(".textarea-inner");
 
     expect(wrapper?.classList.contains("textarea-field-bare")).toBe(true);
-    expect(wrapper?.classList.contains("textarea-size-large")).toBe(true);
+    expect(wrapper?.classList.contains("textarea-size-default")).toBe(true);
     expect(wrapper?.classList.contains("textarea-error")).toBe(true);
     expect(inner?.classList.contains("bg-bg-2")).toBe(false);
     expect(textarea?.style.resize).toBe("horizontal");

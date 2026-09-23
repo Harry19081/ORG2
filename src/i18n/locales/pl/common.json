@@ -1389,7 +1389,13 @@
         "mergedCommitsInto_other": "scalono {{count}} commita do",
         "from": "z",
         "copyHeadBranch": "Skopiuj nazwę gałęzi",
-        "branchCopied": "Skopiowano nazwę gałęzi"
+        "branchCopied": "Skopiowano nazwę gałęzi",
+        "findBranch": "Znajdź gałąź…",
+        "useBranch": "Użyj {{branch}}",
+        "noBranches": "Nie znaleziono gałęzi",
+        "changeBase": "Zmień gałąź docelową",
+        "title": "Tytuł",
+        "editTitle": "Edytuj tytuł"
       },
       "sidebar": {
         "reviewers": "Recenzenci",

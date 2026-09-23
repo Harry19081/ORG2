@@ -153,6 +153,9 @@ export interface WorkstationPrDetailCallbacks {
     | ((enabled: boolean, method: PullRequestMergeMethod) => Promise<void>)
     | null;
   updatePullRequestDraft: ((draft: boolean) => Promise<void>) | null;
+  updatePullRequest:
+    | ((changes: { title?: string; base?: string }) => Promise<void>)
+    | null;
   updatePullRequestState: ((state: "open" | "closed") => Promise<void>) | null;
   updateRequestedReviewers: ((reviewers: string[]) => Promise<void>) | null;
   updateAssignees: ((logins: string[]) => Promise<void>) | null;
@@ -168,6 +171,7 @@ const initialPrDetailCallbacks: WorkstationPrDetailCallbacks = {
   mergePullRequest: null,
   setPullRequestAutoMerge: null,
   updatePullRequestDraft: null,
+  updatePullRequest: null,
   updatePullRequestState: null,
   updateRequestedReviewers: null,
   updateAssignees: null,

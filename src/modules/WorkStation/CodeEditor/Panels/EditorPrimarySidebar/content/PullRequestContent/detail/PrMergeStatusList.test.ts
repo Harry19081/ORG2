@@ -131,6 +131,19 @@ describe("PrMergeStatusList", () => {
     expect(status?.textContent).toContain("No conflicts with the base branch");
   });
 
+  it("shows the breathing dot while GitHub checks mergeability", () => {
+    render({ checks: null, detail: { state: "open" } });
+
+    const status = container.querySelector<HTMLElement>(
+      "[data-testid='pr-merge-status']"
+    );
+    expect(status?.textContent).toContain("Checking mergeability");
+    expect(status?.querySelectorAll('[data-icon="pending-dot"]')).toHaveLength(
+      2
+    );
+    expect(status?.querySelector(".animate-spin")).toBeNull();
+  });
+
   it("counts the failing checks and reads them out of the head commit", () => {
     render({
       checks: {

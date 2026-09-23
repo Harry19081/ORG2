@@ -75,7 +75,7 @@ interface NumberInputProps {
    * Input size
    * @default 'default'
    */
-  size?: "mini" | "small" | "default" | "large";
+  size?: "mini" | "small" | "default";
 
   /**
    * Suffix text (e.g., "px", "ms")

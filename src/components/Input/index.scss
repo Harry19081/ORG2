@@ -52,11 +52,6 @@
       font-size: 14px;
     }
 
-    &.input-size-large {
-      height: 36px;
-      font-size: 14px;
-    }
-
     // After the sizes so auto-height wins, and before ghost so ghost's fixed
     // height still wins over it (the pre-layer source order).
     &.input-auto-height {
@@ -78,8 +73,7 @@
     }
 
     &.input-size-small .input,
-    &.input-size-default .input,
-    &.input-size-large .input {
+    &.input-size-default .input {
       font-size: 14px;
     }
 
@@ -240,12 +234,6 @@
   &.input-size-default {
     .input-inner {
       padding: 0 12px;
-    }
-  }
-
-  &.input-size-large {
-    .input-inner {
-      padding: 0 16px;
     }
   }
 
@@ -481,8 +469,7 @@
   }
 
   &.input-size-small .input-inner,
-  &.input-size-default .input-inner,
-  &.input-size-large .input-inner {
+  &.input-size-default .input-inner {
     padding-right: 3px;
   }
 }

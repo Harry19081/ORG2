@@ -21,6 +21,7 @@ import type {
 } from "@src/api/tauri/github";
 import Button from "@src/components/Button";
 import CiCheckStateIcon from "@src/components/CiCheckStateIcon";
+import CiPendingDot from "@src/components/CiPendingDot";
 import DisclosureChevron from "@src/components/DisclosureChevron";
 import {
   DROPDOWN_CLASSES,
@@ -34,7 +35,6 @@ import {
   GitPullRequestClosedIcon,
   GitPullRequestDraftIcon,
   HugeiconsIcon,
-  Loading03Icon,
 } from "@src/icons";
 import type { PrIdentity } from "@src/store/workstation/codeEditor/workstationSelectedPrAtom";
 import {
@@ -65,7 +65,7 @@ const TONE_TEXT_CLASS: Record<PrMergeStatusTone, string> = {
 
 const HEADLINE_ICONS: Record<
   PrMergeHeadlineKind,
-  { icon: typeof GitMergeIcon; dataIcon: string; spin?: boolean }
+  { icon: typeof GitMergeIcon; dataIcon: string } | null
 > = {
   ableToMerge: { icon: GitMergeIcon, dataIcon: "git-merge" },
   merged: { icon: GitMergeIcon, dataIcon: "git-merge" },
@@ -77,7 +77,7 @@ const HEADLINE_ICONS: Record<
     icon: GitPullRequestClosedIcon,
     dataIcon: "git-pull-request-closed",
   },
-  checking: { icon: Loading03Icon, dataIcon: "loader", spin: true },
+  checking: null,
 };
 
 const HEADLINE_LABELS: Record<PrMergeHeadlineKind, string> = {
@@ -181,14 +181,18 @@ export const PrMergeStatusList: React.FC<PrMergeStatusListProps> = ({
       data-testid="pr-merge-status"
     >
       <div className={ROW_CLASS} data-testid="pr-merge-status-headline">
-        <HugeiconsIcon
-          icon={headlineIcon.icon}
-          data-icon={headlineIcon.dataIcon}
-          size={14}
-          strokeWidth={1.9}
-          className={`shrink-0 ${TONE_TEXT_CLASS[summary.headlineTone]} ${headlineIcon.spin ? "animate-spin" : ""}`.trim()}
-          aria-hidden
-        />
+        {headlineIcon ? (
+          <HugeiconsIcon
+            icon={headlineIcon.icon}
+            data-icon={headlineIcon.dataIcon}
+            size={14}
+            strokeWidth={1.9}
+            className={`shrink-0 ${TONE_TEXT_CLASS[summary.headlineTone]}`}
+            aria-hidden
+          />
+        ) : (
+          <CiPendingDot size={14} />
+        )}
         <span className="min-w-0 flex-1 truncate">
           {t(
             `git.pr.mergeStatus.${summary.headline}`,

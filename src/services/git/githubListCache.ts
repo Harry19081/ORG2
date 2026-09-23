@@ -317,6 +317,31 @@ export function setCachedPrs(
   );
 }
 
+/** Patch a PR list row after a successful write without renewing list freshness. */
+export function updateCachedPrListItem(
+  repoKey: string,
+  prNumber: number,
+  changes: Partial<OpenPRItem>,
+  state: CachedPrState = "open"
+): void {
+  const key = prCacheKey(repoKey, state);
+  const current = prCache.peek(key);
+  if (!current) return;
+  prCache.set(key, {
+    ...current,
+    prs: current.prs.map((item) =>
+      item.number === prNumber ? { ...item, ...changes } : item
+    ),
+  });
+  schedulePersist(STORAGE_KEY_PRS, () =>
+    serializeCacheWithinBudget(
+      prCache,
+      GITHUB_PRS_PERSISTED_BUDGET_BYTES,
+      compactPrsForPersistence
+    )
+  );
+}
+
 // ── Pull Request detail ─────────────────────────────────────────────────────
 
 const prDetailCache = new BoundedMap<string, CachedPrDetail>({

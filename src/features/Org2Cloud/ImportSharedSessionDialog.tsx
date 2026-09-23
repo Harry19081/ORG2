@@ -102,7 +102,7 @@ const ImportSharedSessionDialog: React.FC<ImportSharedSessionDialogProps> = ({
               spellCheck={false}
               rows={3}
               resize="vertical"
-              size="large"
+              size="default"
               data-testid="import-session-input"
             />
             {invalid && (

@@ -25,6 +25,7 @@ import {
   setPRAutoMergeLocal,
   updateIssueLocal,
   updatePRDraftStateLocal,
+  updatePRLocal,
   updatePRStateLocal,
 } from "@src/api/tauri/github";
 import {
@@ -59,6 +60,10 @@ export interface UseWorkstationPrMutationsOptions {
   reviewerCandidates: GitHubIssueUser[];
   assigneeCandidates: GitHubIssueUser[];
   labelCandidates: GitHubIssueLabel[];
+  onMetadataUpdated?: (
+    prNumber: number,
+    changes: { title?: string; base?: string }
+  ) => void;
 }
 
 export function useWorkstationPrMutations({
@@ -73,6 +78,7 @@ export function useWorkstationPrMutations({
   reviewerCandidates,
   assigneeCandidates,
   labelCandidates,
+  onMetadataUpdated,
 }: UseWorkstationPrMutationsOptions) {
   const prActionPendingRef = useRef(false);
   const [prActionPending, setPrActionPending] = useState(false);
@@ -260,8 +266,8 @@ export function useWorkstationPrMutations({
   );
 
   const runPrMutation = useCallback(
-    async (
-      mutation: () => Promise<unknown>,
+    async <T>(
+      mutation: () => Promise<T>,
       /**
        * Detail fields to apply the moment the mutation resolves. The
        * reconciling fetch below is a network round-trip, so without this the
@@ -270,7 +276,7 @@ export function useWorkstationPrMutations({
        * resolved differently.
        */
       optimisticDetail?: Record<string, unknown>
-    ): Promise<void> => {
+    ): Promise<T> => {
       if (!repoFullName || !pr) {
         throw new Error("GitHub repository context is unavailable");
       }
@@ -281,7 +287,7 @@ export function useWorkstationPrMutations({
       setPrActionPending(true);
       setSelectedPr((current) => ({ ...current, error: null }));
       try {
-        await mutation();
+        const result = await mutation();
         if (optimisticDetail) {
           setSelectedPr((current) =>
             current.detail
@@ -293,6 +299,7 @@ export function useWorkstationPrMutations({
           );
         }
         loadDetail(pr, { reconcile: true });
+        return result;
       } catch (error) {
         const message = error instanceof Error ? error.message : String(error);
         setSelectedPr((current) => ({ ...current, error: message }));
@@ -365,6 +372,46 @@ export function useWorkstationPrMutations({
       );
     },
     [repoFullName, pr, runPrMutation]
+  );
+
+  const updatePullRequest = useCallback(
+    async (changes: { title?: string; base?: string }): Promise<void> => {
+      if (!repoFullName || !pr) {
+        throw new Error("GitHub repository context is unavailable");
+      }
+      const updated = await runPrMutation(
+        () => updatePRLocal(repoFullName, pr.number, changes),
+        {
+          ...(changes.title !== undefined ? { title: changes.title } : {}),
+          ...(changes.base !== undefined
+            ? { base: { ref: changes.base } }
+            : {}),
+        }
+      );
+      const serverBase = (updated.base as Record<string, unknown> | undefined)
+        ?.ref;
+      const nextBase =
+        typeof serverBase === "string" ? serverBase : changes.base;
+      setSelectedPr((current) => ({
+        ...current,
+        baseRef: nextBase ?? current.baseRef,
+        detail: current.detail
+          ? { ...current.detail, ...updated }
+          : current.detail,
+      }));
+      updateCachedPrDetail(prDetailKey(repoFullName, pr.number), (cached) => ({
+        baseRef: nextBase ?? cached.baseRef,
+        detail: cached.detail
+          ? { ...cached.detail, ...updated }
+          : cached.detail,
+      }));
+      onMetadataUpdated?.(pr.number, {
+        title:
+          typeof updated.title === "string" ? updated.title : changes.title,
+        base: nextBase,
+      });
+    },
+    [repoFullName, pr, runPrMutation, setSelectedPr, onMetadataUpdated]
   );
 
   const updateRequestedReviewers = useCallback(
@@ -472,6 +519,7 @@ export function useWorkstationPrMutations({
     setPullRequestAutoMerge,
     updatePullRequestState,
     updatePullRequestDraft,
+    updatePullRequest,
     updateRequestedReviewers,
     updateAssignees,
     updateLabels,

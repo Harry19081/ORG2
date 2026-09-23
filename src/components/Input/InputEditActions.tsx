@@ -10,7 +10,7 @@ import { useTranslation } from "react-i18next";
 import Button, { type ButtonProps } from "@src/components/Button";
 import { Cancel01Icon, HugeiconsIcon, Tick01Icon } from "@src/icons";
 
-type InputSize = "mini" | "small" | "default" | "large";
+type InputSize = "mini" | "small" | "default";
 
 /**
  * Each button is 3px inside the field border on every side (1px on mini,
@@ -24,7 +24,6 @@ const ACTION_BUTTON_SIZE: Record<
   mini: { size: "inline", iconSize: 12 },
   small: { size: "sidebar", iconSize: 14 },
   default: { size: "mini", iconSize: 14 },
-  large: { size: "small", iconSize: 14 },
 };
 
 /** Concentric with the field's 8px corner at a 3px inset. */

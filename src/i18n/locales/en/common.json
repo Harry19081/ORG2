@@ -1272,7 +1272,13 @@
         "mergedCommitsInto_other": "merged {{count}} commits into",
         "from": "from",
         "copyHeadBranch": "Copy head branch name",
-        "branchCopied": "Branch name copied"
+        "branchCopied": "Branch name copied",
+        "findBranch": "Find a branch…",
+        "useBranch": "Use {{branch}}",
+        "noBranches": "No branches found",
+        "changeBase": "Change target branch",
+        "title": "Title",
+        "editTitle": "Edit title"
       },
       "sidebar": {
         "reviewers": "Reviewers",

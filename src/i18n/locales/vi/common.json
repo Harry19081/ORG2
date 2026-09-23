@@ -1389,7 +1389,13 @@
         "mergedCommitsInto_other": "đã merge {{count}} commit vào",
         "from": "từ",
         "copyHeadBranch": "Sao chép tên nhánh",
-        "branchCopied": "Đã sao chép tên nhánh"
+        "branchCopied": "Đã sao chép tên nhánh",
+        "findBranch": "Tìm nhánh…",
+        "useBranch": "Dùng {{branch}}",
+        "noBranches": "Không tìm thấy nhánh",
+        "changeBase": "Đổi nhánh đích",
+        "title": "Tiêu đề",
+        "editTitle": "Chỉnh sửa tiêu đề"
       },
       "sidebar": {
         "reviewers": "Người review",

@@ -147,7 +147,7 @@ describe("Input", () => {
           name: "contact",
           required: true,
           appearance: "ghost",
-          size: "large",
+          size: "default",
           autoHeight: true,
           errorMessage: "Invalid address",
           errorPlacement: "left",
@@ -171,7 +171,7 @@ describe("Input", () => {
     );
     expect(wrapper?.classList.contains("input-error")).toBe(true);
     expect(wrapper?.classList.contains("input-field-ghost")).toBe(true);
-    expect(wrapper?.classList.contains("input-size-large")).toBe(true);
+    expect(wrapper?.classList.contains("input-size-default")).toBe(true);
     expect(wrapper?.classList.contains("input-auto-height")).toBe(true);
     expect(inner?.classList.contains("bg-bg-2")).toBe(false);
     expect(container.querySelector(".input-prefix")?.textContent).toBe("@");

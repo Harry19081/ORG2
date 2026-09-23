@@ -90,27 +90,6 @@
     }
   }
 
-  &.number-input-size-large {
-    height: 36px;
-    font-size: 14px;
-
-    .number-input-inner {
-      padding: 0 6px 0 14px;
-    }
-
-    .number-input {
-      font-size: 14px;
-    }
-
-    .number-input-controls {
-      width: 22px;
-    }
-
-    .number-input-btn {
-      height: 16px;
-    }
-  }
-
   // Hover state
   &:hover:not(.number-input-disabled):not(.number-input-focused) {
     .number-input-inner {
@@ -343,12 +322,6 @@
   &.number-input-size-default {
     .number-input-btn-side {
       width: 36px;
-    }
-  }
-
-  &.number-input-size-large {
-    .number-input-btn-side {
-      width: 40px;
     }
   }
 }

@@ -348,7 +348,7 @@ const WorkspaceExplorePanelView: React.FC = () => {
           placeholder={t("explore.searchPlaceholder")}
           suffix={searchButton}
           allowClear
-          size="large"
+          size="default"
           autoFocus
           className="h-auto! [&_.input-inner]:h-auto! [&_.input-inner]:rounded-full! [&_.input-inner]:pt-1! [&_.input-inner]:pr-2! [&_.input-inner]:pb-1! [&_.input-inner]:pl-5!"
         />

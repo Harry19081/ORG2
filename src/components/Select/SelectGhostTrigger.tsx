@@ -27,7 +27,7 @@ export interface SelectGhostTriggerProps {
   /** Whether the associated panel is open (drives text color + chevron). */
   open?: boolean;
   /** @default 'small' */
-  size?: "mini" | "small" | "default" | "large";
+  size?: "mini" | "small" | "default";
   /** @default 'lg' */
   radius?: keyof typeof RADIUS_CLASS_MAP;
   disabled?: boolean;

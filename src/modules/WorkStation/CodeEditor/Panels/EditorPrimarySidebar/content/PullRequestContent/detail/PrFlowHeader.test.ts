@@ -24,6 +24,14 @@ const toast = vi.hoisted(() => ({
   success: vi.fn(),
   error: vi.fn(),
 }));
+const branchApi = vi.hoisted(() => ({
+  list: vi.fn().mockResolvedValue(["develop", "release"]),
+}));
+
+vi.mock("@src/api/tauri/github", async (importOriginal) => ({
+  ...(await importOriginal<typeof import("@src/api/tauri/github")>()),
+  listPRBaseBranchesLocal: branchApi.list,
+}));
 
 vi.mock("react-i18next", () => ({
   useTranslation: (...args: Parameters<typeof useTestTranslation>) =>
@@ -53,6 +61,7 @@ describe("PrFlowHeader", () => {
     clipboard.copyText.mockClear();
     toast.success.mockClear();
     toast.error.mockClear();
+    branchApi.list.mockClear();
     container = document.createElement("div");
     document.body.appendChild(container);
     root = createRoot(container);
@@ -162,5 +171,180 @@ describe("PrFlowHeader", () => {
 
     expect(clipboard.copyText).toHaveBeenCalledWith("feature/flow-header");
     expect(toast.success).toHaveBeenCalledWith("Branch name copied");
+  });
+
+  it("edits only the title in the heading", async () => {
+    const onUpdate = vi.fn().mockResolvedValue(undefined);
+    act(() =>
+      root.render(
+        createElement(PrFlowHeader, {
+          identity: openIdentity,
+          detail: { title: "Original", body: "Old description" },
+          baseBranch: "develop",
+          commitCount: 1,
+          files: [],
+          repoFullName: "org/repo",
+          onUpdate,
+        })
+      )
+    );
+    const editButton = container.querySelector<HTMLButtonElement>(
+      "[data-testid='pr-flow-edit']"
+    );
+    expect(editButton?.getAttribute("aria-label")).toBe("Edit title");
+    expect(editButton?.parentElement?.className).toContain("items-center");
+    expect(editButton?.querySelector('[data-icon="pencil"]')).not.toBeNull();
+    expect(editButton?.textContent).toBe("");
+    expect(
+      container.querySelector("[data-testid='pr-flow-title']")?.textContent
+    ).toContain("#7");
+    act(() => editButton?.click());
+    const title = container.querySelector<HTMLInputElement>("#pr-edit-title");
+    expect(title?.value).toBe("Original");
+    const titleSlot = title?.closest("[data-testid='pr-flow-title']");
+    expect(titleSlot).not.toBeNull();
+    expect(titleSlot?.textContent).not.toContain("#7");
+    expect(title?.closest(".input-wrapper")?.className).toContain(
+      "input-size-default"
+    );
+    expect(container.querySelector("textarea")).toBeNull();
+    act(() => {
+      const setter = Object.getOwnPropertyDescriptor(
+        HTMLInputElement.prototype,
+        "value"
+      )?.set;
+      setter?.call(title, "Revised title");
+      title?.dispatchEvent(new Event("input", { bubbles: true }));
+    });
+    await act(async () => {
+      title?.dispatchEvent(
+        new KeyboardEvent("keydown", { key: "Enter", bubbles: true })
+      );
+      await Promise.resolve();
+    });
+    expect(onUpdate).toHaveBeenCalledWith({ title: "Revised title" });
+  });
+
+  it("loads target branches only when opened and submits the selected base", async () => {
+    const onUpdate = vi.fn().mockResolvedValue(undefined);
+    act(() =>
+      root.render(
+        createElement(PrFlowHeader, {
+          identity: openIdentity,
+          detail: null,
+          baseBranch: "develop",
+          commitCount: 1,
+          files: [],
+          repoFullName: "org/repo",
+          onUpdate,
+        })
+      )
+    );
+    expect(branchApi.list).not.toHaveBeenCalled();
+    const subline = container.querySelector("[data-testid='pr-flow-subline']");
+    const baseButton = subline?.querySelector(
+      "[data-testid='pr-flow-base-branch']"
+    );
+    expect(baseButton).not.toBeNull();
+    expect(subline?.textContent?.indexOf("wants to merge")).toBeLessThan(
+      subline?.textContent?.indexOf("develop") ?? 0
+    );
+    await act(async () => {
+      container
+        .querySelector<HTMLButtonElement>("[data-testid='pr-flow-base-branch']")
+        ?.click();
+      await new Promise((resolve) => setTimeout(resolve, 20));
+    });
+    expect(branchApi.list).toHaveBeenCalledWith("org/repo");
+    await act(async () => {
+      [...document.querySelectorAll<HTMLElement>("[role='option']")]
+        .find((option) => option.textContent?.includes("release"))
+        ?.click();
+      await Promise.resolve();
+    });
+    expect(onUpdate).toHaveBeenCalledWith({ base: "release" });
+  });
+
+  it("reports a failed target branch update", async () => {
+    const onUpdate = vi
+      .fn()
+      .mockRejectedValue(new Error("Branch update failed"));
+    act(() =>
+      root.render(
+        createElement(PrFlowHeader, {
+          identity: openIdentity,
+          detail: null,
+          baseBranch: "develop",
+          commitCount: 1,
+          files: [],
+          repoFullName: "org/repo",
+          onUpdate,
+        })
+      )
+    );
+    await act(async () => {
+      container
+        .querySelector<HTMLButtonElement>("[data-testid='pr-flow-base-branch']")
+        ?.click();
+      await new Promise((resolve) => setTimeout(resolve, 20));
+    });
+    await act(async () => {
+      [...document.querySelectorAll<HTMLElement>("[role='option']")]
+        .find((option) => option.textContent?.includes("release"))
+        ?.click();
+      await Promise.resolve();
+    });
+    expect(onUpdate).toHaveBeenCalledWith({ base: "release" });
+    expect(toast.error).toHaveBeenCalledWith("Branch update failed");
+  });
+
+  it("lets the user enter an exact branch beyond the bounded branch list", async () => {
+    const onUpdate = vi.fn().mockResolvedValue(undefined);
+    act(() =>
+      root.render(
+        createElement(PrFlowHeader, {
+          identity: openIdentity,
+          detail: null,
+          baseBranch: "develop",
+          commitCount: 1,
+          files: [],
+          repoFullName: "org/repo",
+          onUpdate,
+        })
+      )
+    );
+    await act(async () => {
+      container
+        .querySelector<HTMLButtonElement>("[data-testid='pr-flow-base-branch']")
+        ?.click();
+      await new Promise((resolve) => setTimeout(resolve, 20));
+    });
+    const search = document.querySelector<HTMLInputElement>(
+      "input[placeholder='Find a branch…']"
+    );
+    expect(search).not.toBeNull();
+    expect(document.querySelectorAll("[role='option']").length).toBeGreaterThan(
+      0
+    );
+    act(() => {
+      Object.getOwnPropertyDescriptor(
+        HTMLInputElement.prototype,
+        "value"
+      )?.set?.call(search, "release/next");
+      search?.dispatchEvent(new Event("input", { bubbles: true }));
+    });
+    expect(search?.value).toBe("release/next");
+    expect(
+      [...document.querySelectorAll<HTMLElement>("[role='option']")].map(
+        (option) => option.textContent
+      )
+    ).toContain("Use release/next");
+    await act(async () => {
+      [...document.querySelectorAll<HTMLElement>("[role='option']")]
+        .find((option) => option.textContent?.includes("release/next"))
+        ?.click();
+      await Promise.resolve();
+    });
+    expect(onUpdate).toHaveBeenCalledWith({ base: "release/next" });
   });
 });

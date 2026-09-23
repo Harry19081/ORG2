@@ -63,6 +63,7 @@ const apiMocks = vi.hoisted(() => ({
   replyPrReviewCommentLocal: vi.fn(),
   setPRAutoMergeLocal: vi.fn(),
   updatePRDraftStateLocal: vi.fn(),
+  updatePRLocal: vi.fn(),
   updatePRStateLocal: vi.fn(),
 }));
 
@@ -90,6 +91,7 @@ vi.mock("@src/api/tauri/github", () => ({
   replyPrReviewCommentLocal: apiMocks.replyPrReviewCommentLocal,
   setPRAutoMergeLocal: apiMocks.setPRAutoMergeLocal,
   updatePRDraftStateLocal: apiMocks.updatePRDraftStateLocal,
+  updatePRLocal: apiMocks.updatePRLocal,
   updatePRStateLocal: apiMocks.updatePRStateLocal,
 }));
 
@@ -189,6 +191,10 @@ describe("useWorkstationPrDetail cache mutations", () => {
     });
     apiMocks.setPRAutoMergeLocal.mockResolvedValue({ enabled: true });
     apiMocks.updatePRDraftStateLocal.mockResolvedValue(undefined);
+    apiMocks.updatePRLocal.mockResolvedValue({
+      title: "Revised",
+      base: { ref: "release" },
+    });
     apiMocks.updatePRStateLocal.mockResolvedValue({});
     apiMocks.requestPRReviewersLocal.mockResolvedValue([]);
     apiMocks.removePRReviewersLocal.mockResolvedValue([]);
@@ -644,6 +650,10 @@ describe("useWorkstationPrDetail cache mutations", () => {
       await callbacks.setPullRequestAutoMerge?.(true, "rebase");
       await callbacks.updatePullRequestDraft?.(true);
       await callbacks.updatePullRequestState?.("closed");
+      await callbacks.updatePullRequest?.({
+        title: "Revised",
+        base: "release",
+      });
       await callbacks.updateRequestedReviewers?.(["new-reviewer"]);
     });
 
@@ -669,6 +679,11 @@ describe("useWorkstationPrDetail cache mutations", () => {
       REPO_FULL_NAME,
       ACTION_PR.number,
       "closed"
+    );
+    expect(apiMocks.updatePRLocal).toHaveBeenCalledWith(
+      REPO_FULL_NAME,
+      ACTION_PR.number,
+      { title: "Revised", base: "release" }
     );
     expect(apiMocks.requestPRReviewersLocal).toHaveBeenCalledWith(
       REPO_FULL_NAME,

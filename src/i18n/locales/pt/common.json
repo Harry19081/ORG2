@@ -1389,7 +1389,13 @@
         "mergedCommitsInto_other": "fez merge de {{count}} commits em",
         "from": "a partir de",
         "copyHeadBranch": "Copiar nome do branch",
-        "branchCopied": "Nome do branch copiado"
+        "branchCopied": "Nome do branch copiado",
+        "findBranch": "Buscar branch…",
+        "useBranch": "Usar {{branch}}",
+        "noBranches": "Nenhuma branch encontrada",
+        "changeBase": "Alterar branch de destino",
+        "title": "Título",
+        "editTitle": "Editar título"
       },
       "sidebar": {
         "reviewers": "Revisores",

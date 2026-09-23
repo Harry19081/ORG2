@@ -2,11 +2,13 @@ import { beforeEach, describe, expect, it, vi } from "vitest";
 
 import {
   listOpenPRsLocal,
+  listPRBaseBranchesLocal,
   mergePRLocal,
   removePRReviewersLocal,
   requestPRReviewersLocal,
   setPRAutoMergeLocal,
   updatePRDraftStateLocal,
+  updatePRLocal,
 } from "./pullRequests";
 
 const mocks = vi.hoisted(() => ({
@@ -103,5 +105,27 @@ describe("pull request action IPC payloads", () => {
       "github_update_pr_draft_state",
       { repoFullName: "org/repo", prNumber: 42, draft: false }
     );
+  });
+
+  it("lists target branches and updates only supplied PR fields", async () => {
+    await listPRBaseBranchesLocal("org/repo");
+    expect(mocks.invokeWithAuth).toHaveBeenLastCalledWith(
+      "github_list_pr_base_branches",
+      { repoFullName: "org/repo" }
+    );
+    await updatePRLocal("org/repo", 42, { base: "release" });
+    expect(mocks.invokeWithAuth).toHaveBeenLastCalledWith("github_update_pr", {
+      repoFullName: "org/repo",
+      prNumber: 42,
+      title: null,
+      base: "release",
+    });
+    await updatePRLocal("org/repo", 42, { title: "Revised" });
+    expect(mocks.invokeWithAuth).toHaveBeenLastCalledWith("github_update_pr", {
+      repoFullName: "org/repo",
+      prNumber: 42,
+      title: "Revised",
+      base: null,
+    });
   });
 });

@@ -543,7 +543,7 @@ export function SessionsScreen({
                   scrollPositions.current.search = 0;
                   if (searchList.current) searchList.current.scrollTop = 0;
                 }}
-                size="large"
+                size="default"
               />
               <Button
                 variant="tertiary"

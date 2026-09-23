@@ -1389,7 +1389,13 @@
         "mergedCommitsInto_other": "{{count}} commit'i şuraya birleştirdi:",
         "from": "şuradan:",
         "copyHeadBranch": "Dal adını kopyala",
-        "branchCopied": "Dal adı kopyalandı"
+        "branchCopied": "Dal adı kopyalandı",
+        "findBranch": "Dal ara…",
+        "useBranch": "{{branch}} dalını kullan",
+        "noBranches": "Dal bulunamadı",
+        "changeBase": "Hedef dalı değiştir",
+        "title": "Başlık",
+        "editTitle": "Başlığı düzenle"
       },
       "sidebar": {
         "reviewers": "İnceleyenler",

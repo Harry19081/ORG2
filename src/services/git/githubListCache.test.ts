@@ -18,6 +18,7 @@ import {
   updateCachedClosedIssues,
   updateCachedOpenIssues,
   updateCachedPrDetail,
+  updateCachedPrListItem,
 } from "./githubListCache";
 
 describe("global GitHub list cache", () => {
@@ -95,6 +96,28 @@ describe("global GitHub list cache", () => {
     expect(isPrCacheStale(repoKey)).toBe(false);
 
     vi.advanceTimersByTime(GITHUB_LIST_CACHE_TTL_MS + 1);
+    expect(isPrCacheStale(repoKey)).toBe(true);
+  });
+
+  it("patches one PR row without extending the list freshness window", () => {
+    vi.useFakeTimers();
+    vi.setSystemTime(new Date("2026-07-12T06:00:00.000Z"));
+    const repoKey = `edited-${crypto.randomUUID()}`;
+    setCachedPrs(repoKey, [
+      { number: 7, title: "Old", base_branch: "develop" },
+      { number: 8, title: "Other", base_branch: "develop" },
+    ] as never);
+    vi.advanceTimersByTime(GITHUB_LIST_CACHE_TTL_MS + 1);
+    updateCachedPrListItem(repoKey, 7, {
+      title: "New",
+      base_branch: "release",
+    });
+    expect(getCachedPrs(repoKey)?.prs[0]).toMatchObject({
+      number: 7,
+      title: "New",
+      base_branch: "release",
+    });
+    expect(getCachedPrs(repoKey)?.prs[1]?.title).toBe("Other");
     expect(isPrCacheStale(repoKey)).toBe(true);
   });
 

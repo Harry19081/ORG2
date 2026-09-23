@@ -42,7 +42,7 @@ export interface UseTimezoneSelectOptions {
   /** Exclude "auto" option — use for profile where a real timezone is expected */
   excludeAuto?: boolean;
   /** Select size */
-  size?: "mini" | "small" | "default" | "large";
+  size?: SelectProps["size"];
   /** Prefix element (icon, etc.) */
   prefix?: ReactNode;
   /** Custom width style */

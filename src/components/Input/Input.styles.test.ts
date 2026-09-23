@@ -79,7 +79,6 @@ describe("Input stylesheet cascade layers", () => {
     [".input-wrapper.input-size-mini", "height"],
     [".input-wrapper.input-size-small", "height"],
     [".input-wrapper.input-size-default", "height"],
-    [".input-wrapper.input-size-large", "height"],
     [".input-wrapper.input-auto-height", "height"],
     [".input-wrapper.input-field-ghost", "min-width"],
     [".input-wrapper.input-field-ghost", "max-width"],
@@ -120,7 +119,7 @@ describe("Input stylesheet cascade layers", () => {
     [".input::placeholder", "color"],
     [".input-wrapper.input-size-mini .input", "font-size"],
     [
-      ".input-wrapper.input-size-small .input, .input-wrapper.input-size-default .input, .input-wrapper.input-size-large .input",
+      ".input-wrapper.input-size-small .input, .input-wrapper.input-size-default .input",
       "font-size",
     ],
     [".input-wrapper.input-auto-height .input", "line-height"],

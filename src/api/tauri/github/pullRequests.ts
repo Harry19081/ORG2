@@ -257,6 +257,27 @@ export async function getPRLocal(
   });
 }
 
+export async function listPRBaseBranchesLocal(
+  repoFullName: string
+): Promise<string[]> {
+  return invokeWithAuth<string[]>("github_list_pr_base_branches", {
+    repoFullName,
+  });
+}
+
+export async function updatePRLocal(
+  repoFullName: string,
+  prNumber: number,
+  changes: { title?: string; base?: string }
+): Promise<Record<string, unknown>> {
+  return invokeWithAuth<Record<string, unknown>>("github_update_pr", {
+    repoFullName,
+    prNumber,
+    title: changes.title ?? null,
+    base: changes.base ?? null,
+  });
+}
+
 export async function listPRCommitsLocal(
   repoFullName: string,
   prNumber: number

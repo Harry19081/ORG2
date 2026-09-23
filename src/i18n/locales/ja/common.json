@@ -1389,7 +1389,13 @@
         "mergedCommitsInto_other": "が {{count}} 件のコミットをマージしました:",
         "from": "←",
         "copyHeadBranch": "ブランチ名をコピー",
-        "branchCopied": "ブランチ名をコピーしました"
+        "branchCopied": "ブランチ名をコピーしました",
+        "findBranch": "ブランチを検索…",
+        "useBranch": "{{branch}} を使用",
+        "noBranches": "ブランチが見つかりません",
+        "changeBase": "マージ先ブランチを変更",
+        "title": "タイトル",
+        "editTitle": "タイトルを編集"
       },
       "sidebar": {
         "reviewers": "レビュアー",
