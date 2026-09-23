@@ -195,10 +195,18 @@ describe("PrFlowHeader", () => {
     expect(editButton?.parentElement?.className).toContain("items-center");
     expect(editButton?.querySelector('[data-icon="pencil"]')).not.toBeNull();
     expect(editButton?.textContent).toBe("");
+    expect(
+      container.querySelector("[data-testid='pr-flow-title']")?.textContent
+    ).toContain("#7");
     act(() => editButton?.click());
     const title = container.querySelector<HTMLInputElement>("#pr-edit-title");
     expect(title?.value).toBe("Original");
-    expect(title?.closest("[data-testid='pr-flow-title']")).not.toBeNull();
+    const titleSlot = title?.closest("[data-testid='pr-flow-title']");
+    expect(titleSlot).not.toBeNull();
+    expect(titleSlot?.textContent).not.toContain("#7");
+    expect(title?.closest(".input-wrapper")?.className).toContain(
+      "input-size-default"
+    );
     expect(container.querySelector("textarea")).toBeNull();
     act(() => {
       const setter = Object.getOwnPropertyDescriptor(

@@ -205,22 +205,19 @@ export function PrFlowHeader({
       title={title}
       titleEditor={
         editing ? (
-          <div className="flex min-w-0 items-center gap-2">
-            <Input
-              id="pr-edit-title"
-              aria-label={t("git.pr.flow.title")}
-              value={editTitle}
-              onChange={setEditTitle}
-              onConfirm={(value) => void saveTitle(value)}
-              onCancel={() => setEditing(false)}
-              confirmDisabled={!editTitle.trim() || pending}
-              confirmLoading={saving}
-              size="large"
-              className="min-w-0 flex-1"
-              autoFocus
-            />
-            <span className="shrink-0 text-text-3">#{identity.number}</span>
-          </div>
+          <Input
+            id="pr-edit-title"
+            aria-label={t("git.pr.flow.title")}
+            value={editTitle}
+            onChange={setEditTitle}
+            onConfirm={(value) => void saveTitle(value)}
+            onCancel={() => setEditing(false)}
+            confirmDisabled={!editTitle.trim() || pending}
+            confirmLoading={saving}
+            size="default"
+            className="min-w-0 flex-1"
+            autoFocus
+          />
         ) : undefined
       }
       titleAction={
