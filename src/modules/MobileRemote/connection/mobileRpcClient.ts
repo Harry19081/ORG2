@@ -4,7 +4,9 @@ import type {
   JsonRpcInbound,
   JsonRpcNotification,
   JsonRpcRequest,
+  MobileRpcClient,
   MobileRpcError,
+  RpcNotificationHandler,
 } from "./types";
 import {
   MobileConnectionAuthorizationError,
@@ -12,22 +14,10 @@ import {
   isJsonRpcResponse,
 } from "./types";
 
-export type RpcNotificationHandler = (
-  method: string,
-  params: Record<string, unknown> | undefined
-) => void;
-
-export interface MobileRpcClient {
-  call<T>(
-    method: string,
-    params?: Record<string, unknown>,
-    signal?: AbortSignal
-  ): Promise<T>;
-  notify(method: string, params?: Record<string, unknown>): void;
-  onNotification(handler: RpcNotificationHandler): () => void;
-  close(): void;
-  get readyState(): number;
-}
+// Declared in ./types so mobileSessionIdentityCache can name the client
+// without importing this module, which imports the cache for
+// `invalidateMobileSessionIdentities`. Re-exported here for existing importers.
+export type { MobileRpcClient, RpcNotificationHandler };
 
 interface PendingCall {
   resolve: (value: unknown) => void;

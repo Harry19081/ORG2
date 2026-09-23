@@ -1,7 +1,6 @@
 import { getExternalHistorySourceId } from "@src/util/session/sessionDispatch";
 
-import type { MobileRpcClient } from "./mobileRpcClient";
-import type { MobileSessionRow } from "./types";
+import type { MobileRpcClient, MobileSessionRow } from "./types";
 
 export interface MobileSessionIdentity {
   sessionId: string;

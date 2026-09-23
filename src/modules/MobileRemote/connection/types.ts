@@ -190,3 +190,26 @@ export function isJsonRpcResponse(
 ): message is JsonRpcResponse {
   return "id" in message && message.id != null;
 }
+
+/**
+ * The RPC client's public shape. It lives here rather than beside its
+ * implementation so `mobileSessionIdentityCache` — which keys WeakMaps on the
+ * client — can name the type without importing `mobileRpcClient`, which
+ * imports the cache back for `invalidateMobileSessionIdentities`.
+ */
+export type RpcNotificationHandler = (
+  method: string,
+  params: Record<string, unknown> | undefined
+) => void;
+
+export interface MobileRpcClient {
+  call<T>(
+    method: string,
+    params?: Record<string, unknown>,
+    signal?: AbortSignal
+  ): Promise<T>;
+  notify(method: string, params?: Record<string, unknown>): void;
+  onNotification(handler: RpcNotificationHandler): () => void;
+  close(): void;
+  get readyState(): number;
+}
