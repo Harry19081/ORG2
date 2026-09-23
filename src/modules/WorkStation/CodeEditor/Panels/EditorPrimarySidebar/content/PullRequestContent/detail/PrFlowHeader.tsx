@@ -167,12 +167,8 @@ export function PrFlowHeader({
   const changeBase = useCallback(
     async (base: string) => {
       if (!onUpdate || base === baseBranch) return;
-      try {
-        await onUpdate({ base });
-        setBranchOpen(false);
-      } catch (error) {
-        Message.error(error instanceof Error ? error.message : String(error));
-      }
+      await onUpdate({ base });
+      setBranchOpen(false);
     },
     [onUpdate, baseBranch]
   );
@@ -283,7 +279,12 @@ export function PrFlowHeader({
           searchPlaceholder={t("git.pr.flow.findBranch")}
           emptyContent={t("git.pr.flow.noBranches")}
           onSelect={(value) => {
-            if (typeof value === "string") void changeBase(value);
+            if (typeof value === "string")
+              changeBase(value).catch((error: unknown) => {
+                Message.error(
+                  error instanceof Error ? error.message : String(error)
+                );
+              });
           }}
         >
           <Button

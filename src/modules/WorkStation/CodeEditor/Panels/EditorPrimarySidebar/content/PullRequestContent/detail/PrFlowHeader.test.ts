@@ -265,6 +265,39 @@ describe("PrFlowHeader", () => {
     expect(onUpdate).toHaveBeenCalledWith({ base: "release" });
   });
 
+  it("reports a failed target branch update", async () => {
+    const onUpdate = vi
+      .fn()
+      .mockRejectedValue(new Error("Branch update failed"));
+    act(() =>
+      root.render(
+        createElement(PrFlowHeader, {
+          identity: openIdentity,
+          detail: null,
+          baseBranch: "develop",
+          commitCount: 1,
+          files: [],
+          repoFullName: "org/repo",
+          onUpdate,
+        })
+      )
+    );
+    await act(async () => {
+      container
+        .querySelector<HTMLButtonElement>("[data-testid='pr-flow-base-branch']")
+        ?.click();
+      await new Promise((resolve) => setTimeout(resolve, 20));
+    });
+    await act(async () => {
+      [...document.querySelectorAll<HTMLElement>("[role='option']")]
+        .find((option) => option.textContent?.includes("release"))
+        ?.click();
+      await Promise.resolve();
+    });
+    expect(onUpdate).toHaveBeenCalledWith({ base: "release" });
+    expect(toast.error).toHaveBeenCalledWith("Branch update failed");
+  });
+
   it("lets the user enter an exact branch beyond the bounded branch list", async () => {
     const onUpdate = vi.fn().mockResolvedValue(undefined);
     act(() =>
