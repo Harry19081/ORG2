@@ -15,7 +15,6 @@ import Dropdown from "@src/components/Dropdown";
 import Input from "@src/components/Input";
 import Message from "@src/components/Message";
 import PrStatusBadge from "@src/components/PrStatusBadge";
-import Textarea from "@src/components/Textarea";
 import GitHubFlowHeader from "@src/features/GitHubWork/GitHubFlowHeader";
 import { Copy01Icon, HugeiconsIcon, Pen01Icon } from "@src/icons";
 import type { PrIdentity } from "@src/store/workstation/codeEditor/workstationSelectedPrAtom";
@@ -69,11 +68,7 @@ interface PrFlowHeaderProps {
   files: PrFile[];
   repoFullName?: string | null;
   pending?: boolean;
-  onUpdate?: (changes: {
-    title?: string;
-    body?: string;
-    base?: string;
-  }) => Promise<void>;
+  onUpdate?: (changes: { title?: string; base?: string }) => Promise<void>;
 }
 
 export function PrFlowHeader({
@@ -94,11 +89,9 @@ export function PrFlowHeader({
   const branchRequestRef = useRef(0);
   const [editing, setEditing] = useState(false);
   const [editTitle, setEditTitle] = useState("");
-  const [editBody, setEditBody] = useState("");
   const [saving, setSaving] = useState(false);
   const title =
     typeof detail?.title === "string" ? detail.title : identity.title;
-  const body = typeof detail?.body === "string" ? detail.body : "";
 
   useEffect(() => {
     branchRequestRef.current += 1;
@@ -184,115 +177,54 @@ export function PrFlowHeader({
     [onUpdate, baseBranch]
   );
 
-  const saveDescription = useCallback(async () => {
-    if (!onUpdate || !editTitle.trim()) return;
-    setSaving(true);
-    try {
-      await onUpdate({ title: editTitle.trim(), body: editBody });
-      setEditing(false);
-    } catch (error) {
-      Message.error(error instanceof Error ? error.message : String(error));
-    } finally {
-      setSaving(false);
-    }
-  }, [onUpdate, editTitle, editBody]);
+  const saveTitle = useCallback(
+    async (value: string) => {
+      const nextTitle = value.trim();
+      if (!onUpdate || !nextTitle) return;
+      if (nextTitle === title) {
+        setEditing(false);
+        return;
+      }
+      setSaving(true);
+      try {
+        await onUpdate({ title: nextTitle });
+        setEditing(false);
+      } catch (error) {
+        Message.error(error instanceof Error ? error.message : String(error));
+      } finally {
+        setSaving(false);
+      }
+    },
+    [onUpdate, title]
+  );
 
   return (
-    <div className="flex flex-col gap-3">
-      <div className="flex min-w-0 items-start gap-2">
-        <div className="min-w-0 flex-1">
-          <GitHubFlowHeader
-            testIdPrefix="pr-flow"
-            ariaLabel={t("git.pr.summary.label")}
-            title={title}
-            number={identity.number}
-            status={
-              <PrStatusBadge status={identity.status} size="sm" showIcon />
-            }
-            actor={actor}
-            unknownActorLabel={t("git.pr.unknownAuthor")}
-          >
-            <span>{verbPhrase}</span>
-            {identity.status === "open" && onUpdate && repoFullName ? (
-              <Dropdown
-                popupVisible={branchOpen}
-                onVisibleChange={openBranches}
-                position="bottom-start"
-                getPopupContainer={() => document.body}
-                avoidViewportOverflow
-                options={[
-                  ...branches.map((branch) => ({
-                    label: branch,
-                    value: branch,
-                  })),
-                  ...(branchSearch.trim() &&
-                  !branches.some((branch) => branch === branchSearch.trim())
-                    ? [
-                        {
-                          label: t("git.pr.flow.useBranch", {
-                            branch: branchSearch.trim(),
-                          }),
-                          value: branchSearch.trim(),
-                        },
-                      ]
-                    : []),
-                ]}
-                value={baseBranch}
-                showSearch
-                onSearch={setBranchSearch}
-                loading={branchLoading}
-                searchPlaceholder={t("git.pr.flow.findBranch")}
-                emptyContent={t("git.pr.flow.noBranches")}
-                onSelect={(value) => {
-                  if (typeof value === "string") void changeBase(value);
-                }}
-              >
-                <Button
-                  size="inline"
-                  variant="tertiary"
-                  disabled={pending || saving}
-                  aria-label={t("git.pr.flow.changeBase")}
-                  aria-expanded={branchOpen}
-                  data-testid="pr-flow-base-branch"
-                >
-                  <BranchPill name={baseBranch} /> ▾
-                </Button>
-              </Dropdown>
-            ) : (
-              <BranchPill name={baseBranch} />
-            )}
-            <span>{t("git.pr.flow.from")}</span>
-            <BranchPill name={identity.headBranch} />
-            <Button
-              size="sidebar"
-              aria-label={t("git.pr.flow.copyHeadBranch")}
-              title={t("git.pr.flow.copyHeadBranch")}
-              className="text-text-3 hover:text-text-1"
-              onClick={() => void copyHeadBranch()}
-              data-testid="pr-flow-copy-branch"
-              variant="tertiary"
-              iconOnly
-              icon={
-                <HugeiconsIcon
-                  icon={Copy01Icon}
-                  data-icon="copy"
-                  size={12}
-                  strokeWidth={1.75}
-                  aria-hidden
-                />
-              }
+    <GitHubFlowHeader
+      testIdPrefix="pr-flow"
+      ariaLabel={t("git.pr.summary.label")}
+      title={title}
+      titleEditor={
+        editing ? (
+          <div className="flex min-w-0 items-center gap-2">
+            <Input
+              id="pr-edit-title"
+              aria-label={t("git.pr.flow.title")}
+              value={editTitle}
+              onChange={setEditTitle}
+              onConfirm={(value) => void saveTitle(value)}
+              onCancel={() => setEditing(false)}
+              confirmDisabled={!editTitle.trim() || pending}
+              confirmLoading={saving}
+              size="large"
+              className="min-w-0 flex-1"
+              autoFocus
             />
-            <span className="inline-flex items-center gap-1 tabular-nums">
-              <span className="text-success-6">
-                +{additions.toLocaleString("en-US")}
-              </span>
-              <span className="text-danger-6">
-                -{deletions.toLocaleString("en-US")}
-              </span>
-            </span>
-          </GitHubFlowHeader>
-        </div>
-        {onUpdate && repoFullName && !editing ? (
+            <span className="shrink-0 text-text-3">#{identity.number}</span>
+          </div>
+        ) : undefined
+      }
+      titleAction={
+        onUpdate && repoFullName && !editing ? (
           <Button
             size="mini"
             variant="tertiary"
@@ -306,59 +238,100 @@ export function PrFlowHeader({
                 aria-hidden
               />
             }
-            aria-label={t("git.pr.flow.editTitleDescription")}
-            title={t("git.pr.flow.editTitleDescription")}
+            aria-label={t("git.pr.flow.editTitle")}
+            title={t("git.pr.flow.editTitle")}
             disabled={pending}
             onClick={() => {
               setEditTitle(title);
-              setEditBody(body);
               setEditing(true);
             }}
             data-testid="pr-flow-edit"
           />
-        ) : null}
-      </div>
-      {onUpdate && repoFullName ? (
-        editing ? (
-          <div className="flex flex-col gap-2 rounded-lg border border-border-1 bg-fill-1 p-3">
-            <label htmlFor="pr-edit-title">{t("git.pr.flow.title")}</label>
-            <Input
-              id="pr-edit-title"
-              value={editTitle}
-              onChange={setEditTitle}
-              disabled={saving}
-            />
-            <label htmlFor="pr-edit-body">{t("git.pr.flow.description")}</label>
-            <Textarea
-              id="pr-edit-body"
-              value={editBody}
-              onChange={setEditBody}
-              disabled={saving}
-              rows={8}
-            />
-            <div className="flex gap-2">
-              <Button
-                size="small"
-                variant="primary"
-                loading={saving}
-                disabled={!editTitle.trim() || pending}
-                onClick={() => void saveDescription()}
-                data-testid="pr-flow-save"
-              >
-                {t("git.pr.flow.save")}
-              </Button>
-              <Button
-                size="small"
-                variant="tertiary"
-                disabled={saving}
-                onClick={() => setEditing(false)}
-              >
-                {t("git.pr.flow.cancel")}
-              </Button>
-            </div>
-          </div>
-        ) : null
-      ) : null}
-    </div>
+        ) : undefined
+      }
+      number={identity.number}
+      status={<PrStatusBadge status={identity.status} size="sm" showIcon />}
+      actor={actor}
+      unknownActorLabel={t("git.pr.unknownAuthor")}
+    >
+      <span>{verbPhrase}</span>
+      {identity.status === "open" && onUpdate && repoFullName ? (
+        <Dropdown
+          popupVisible={branchOpen}
+          onVisibleChange={openBranches}
+          position="bottom-start"
+          getPopupContainer={() => document.body}
+          avoidViewportOverflow
+          options={[
+            ...branches.map((branch) => ({
+              label: branch,
+              value: branch,
+            })),
+            ...(branchSearch.trim() &&
+            !branches.some((branch) => branch === branchSearch.trim())
+              ? [
+                  {
+                    label: t("git.pr.flow.useBranch", {
+                      branch: branchSearch.trim(),
+                    }),
+                    value: branchSearch.trim(),
+                  },
+                ]
+              : []),
+          ]}
+          value={baseBranch}
+          showSearch
+          onSearch={setBranchSearch}
+          loading={branchLoading}
+          searchPlaceholder={t("git.pr.flow.findBranch")}
+          emptyContent={t("git.pr.flow.noBranches")}
+          onSelect={(value) => {
+            if (typeof value === "string") void changeBase(value);
+          }}
+        >
+          <Button
+            size="inline"
+            variant="tertiary"
+            disabled={pending || saving}
+            aria-label={t("git.pr.flow.changeBase")}
+            aria-expanded={branchOpen}
+            data-testid="pr-flow-base-branch"
+          >
+            <BranchPill name={baseBranch} /> ▾
+          </Button>
+        </Dropdown>
+      ) : (
+        <BranchPill name={baseBranch} />
+      )}
+      <span>{t("git.pr.flow.from")}</span>
+      <BranchPill name={identity.headBranch} />
+      <Button
+        size="sidebar"
+        aria-label={t("git.pr.flow.copyHeadBranch")}
+        title={t("git.pr.flow.copyHeadBranch")}
+        className="text-text-3 hover:text-text-1"
+        onClick={() => void copyHeadBranch()}
+        data-testid="pr-flow-copy-branch"
+        variant="tertiary"
+        iconOnly
+        icon={
+          <HugeiconsIcon
+            icon={Copy01Icon}
+            data-icon="copy"
+            size={12}
+            strokeWidth={1.75}
+            aria-hidden
+          />
+        }
+      />
+      <span className="inline-flex items-center gap-1 tabular-nums">
+        <span className="text-success-6">
+          +{additions.toLocaleString("en-US")}
+        </span>
+        <span className="text-danger-6">
+          -{deletions.toLocaleString("en-US")}
+        </span>
+      </span>
+    </GitHubFlowHeader>
   );
 }

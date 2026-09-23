@@ -1395,10 +1395,7 @@
         "noBranches": "Dal bulunamadı",
         "changeBase": "Hedef dalı değiştir",
         "title": "Başlık",
-        "description": "Açıklama",
-        "save": "Değişiklikleri kaydet",
-        "cancel": "İptal",
-        "editTitleDescription": "Başlığı ve açıklamayı düzenle"
+        "editTitle": "Başlığı düzenle"
       },
       "sidebar": {
         "reviewers": "İnceleyenler",

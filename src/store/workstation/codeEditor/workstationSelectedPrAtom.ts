@@ -154,11 +154,7 @@ export interface WorkstationPrDetailCallbacks {
     | null;
   updatePullRequestDraft: ((draft: boolean) => Promise<void>) | null;
   updatePullRequest:
-    | ((changes: {
-        title?: string;
-        body?: string;
-        base?: string;
-      }) => Promise<void>)
+    | ((changes: { title?: string; base?: string }) => Promise<void>)
     | null;
   updatePullRequestState: ((state: "open" | "closed") => Promise<void>) | null;
   updateRequestedReviewers: ((reviewers: string[]) => Promise<void>) | null;

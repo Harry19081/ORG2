@@ -1395,10 +1395,7 @@
         "noBranches": "Keine Branches gefunden",
         "changeBase": "Zielbranch ändern",
         "title": "Titel",
-        "description": "Beschreibung",
-        "save": "Änderungen speichern",
-        "cancel": "Abbrechen",
-        "editTitleDescription": "Titel und Beschreibung bearbeiten"
+        "editTitle": "Titel bearbeiten"
       },
       "sidebar": {
         "reviewers": "Reviewer",

@@ -1395,10 +1395,7 @@
         "noBranches": "Không tìm thấy nhánh",
         "changeBase": "Đổi nhánh đích",
         "title": "Tiêu đề",
-        "description": "Mô tả",
-        "save": "Lưu thay đổi",
-        "cancel": "Hủy",
-        "editTitleDescription": "Chỉnh sửa tiêu đề và mô tả"
+        "editTitle": "Chỉnh sửa tiêu đề"
       },
       "sidebar": {
         "reviewers": "Người review",

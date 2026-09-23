@@ -1395,10 +1395,7 @@
         "noBranches": "Nenhuma branch encontrada",
         "changeBase": "Alterar branch de destino",
         "title": "Título",
-        "description": "Descrição",
-        "save": "Salvar alterações",
-        "cancel": "Cancelar",
-        "editTitleDescription": "Editar título e descrição"
+        "editTitle": "Editar título"
       },
       "sidebar": {
         "reviewers": "Revisores",

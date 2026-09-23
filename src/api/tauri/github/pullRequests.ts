@@ -268,13 +268,12 @@ export async function listPRBaseBranchesLocal(
 export async function updatePRLocal(
   repoFullName: string,
   prNumber: number,
-  changes: { title?: string; body?: string; base?: string }
+  changes: { title?: string; base?: string }
 ): Promise<Record<string, unknown>> {
   return invokeWithAuth<Record<string, unknown>>("github_update_pr", {
     repoFullName,
     prNumber,
     title: changes.title ?? null,
-    body: changes.body ?? null,
     base: changes.base ?? null,
   });
 }

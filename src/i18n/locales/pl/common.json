@@ -1395,10 +1395,7 @@
         "noBranches": "Nie znaleziono gałęzi",
         "changeBase": "Zmień gałąź docelową",
         "title": "Tytuł",
-        "description": "Opis",
-        "save": "Zapisz zmiany",
-        "cancel": "Anuluj",
-        "editTitleDescription": "Edytuj tytuł i opis"
+        "editTitle": "Edytuj tytuł"
       },
       "sidebar": {
         "reviewers": "Recenzenci",

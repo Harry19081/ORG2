@@ -118,15 +118,13 @@ describe("pull request action IPC payloads", () => {
       repoFullName: "org/repo",
       prNumber: 42,
       title: null,
-      body: null,
       base: "release",
     });
-    await updatePRLocal("org/repo", 42, { title: "Revised", body: "" });
+    await updatePRLocal("org/repo", 42, { title: "Revised" });
     expect(mocks.invokeWithAuth).toHaveBeenLastCalledWith("github_update_pr", {
       repoFullName: "org/repo",
       prNumber: 42,
       title: "Revised",
-      body: "",
       base: null,
     });
   });

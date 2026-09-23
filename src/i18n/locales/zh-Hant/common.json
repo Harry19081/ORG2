@@ -1395,10 +1395,7 @@
         "noBranches": "找不到分支",
         "changeBase": "變更目標分支",
         "title": "標題",
-        "description": "描述",
-        "save": "儲存變更",
-        "cancel": "取消",
-        "editTitleDescription": "編輯標題與描述"
+        "editTitle": "編輯標題"
       },
       "sidebar": {
         "reviewers": "審查者",

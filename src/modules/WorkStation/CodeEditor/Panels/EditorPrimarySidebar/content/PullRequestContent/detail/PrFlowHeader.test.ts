@@ -173,7 +173,7 @@ describe("PrFlowHeader", () => {
     expect(toast.success).toHaveBeenCalledWith("Branch name copied");
   });
 
-  it("saves a changed title and description", async () => {
+  it("edits only the title in the heading", async () => {
     const onUpdate = vi.fn().mockResolvedValue(undefined);
     act(() =>
       root.render(
@@ -191,16 +191,15 @@ describe("PrFlowHeader", () => {
     const editButton = container.querySelector<HTMLButtonElement>(
       "[data-testid='pr-flow-edit']"
     );
-    expect(editButton?.getAttribute("aria-label")).toBe(
-      "Edit title and description"
-    );
+    expect(editButton?.getAttribute("aria-label")).toBe("Edit title");
+    expect(editButton?.parentElement?.className).toContain("items-center");
     expect(editButton?.querySelector('[data-icon="pencil"]')).not.toBeNull();
     expect(editButton?.textContent).toBe("");
     act(() => editButton?.click());
     const title = container.querySelector<HTMLInputElement>("#pr-edit-title");
-    const body = container.querySelector<HTMLTextAreaElement>("#pr-edit-body");
     expect(title?.value).toBe("Original");
-    expect(body?.value).toBe("Old description");
+    expect(title?.closest("[data-testid='pr-flow-title']")).not.toBeNull();
+    expect(container.querySelector("textarea")).toBeNull();
     act(() => {
       const setter = Object.getOwnPropertyDescriptor(
         HTMLInputElement.prototype,
@@ -208,23 +207,14 @@ describe("PrFlowHeader", () => {
       )?.set;
       setter?.call(title, "Revised title");
       title?.dispatchEvent(new Event("input", { bubbles: true }));
-      const bodySetter = Object.getOwnPropertyDescriptor(
-        HTMLTextAreaElement.prototype,
-        "value"
-      )?.set;
-      bodySetter?.call(body, "Revised description");
-      body?.dispatchEvent(new Event("input", { bubbles: true }));
     });
     await act(async () => {
-      container
-        .querySelector<HTMLButtonElement>("[data-testid='pr-flow-save']")
-        ?.click();
+      title?.dispatchEvent(
+        new KeyboardEvent("keydown", { key: "Enter", bubbles: true })
+      );
       await Promise.resolve();
     });
-    expect(onUpdate).toHaveBeenCalledWith({
-      title: "Revised title",
-      body: "Revised description",
-    });
+    expect(onUpdate).toHaveBeenCalledWith({ title: "Revised title" });
   });
 
   it("loads target branches only when opened and submits the selected base", async () => {
@@ -243,6 +233,14 @@ describe("PrFlowHeader", () => {
       )
     );
     expect(branchApi.list).not.toHaveBeenCalled();
+    const subline = container.querySelector("[data-testid='pr-flow-subline']");
+    const baseButton = subline?.querySelector(
+      "[data-testid='pr-flow-base-branch']"
+    );
+    expect(baseButton).not.toBeNull();
+    expect(subline?.textContent?.indexOf("wants to merge")).toBeLessThan(
+      subline?.textContent?.indexOf("develop") ?? 0
+    );
     await act(async () => {
       container
         .querySelector<HTMLButtonElement>("[data-testid='pr-flow-base-branch']")

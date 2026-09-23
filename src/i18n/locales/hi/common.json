@@ -1278,10 +1278,7 @@
         "noBranches": "कोई ब्रांच नहीं मिली",
         "changeBase": "लक्ष्य ब्रांच बदलें",
         "title": "शीर्षक",
-        "description": "विवरण",
-        "save": "बदलाव सहेजें",
-        "cancel": "रद्द करें",
-        "editTitleDescription": "शीर्षक और विवरण संपादित करें"
+        "editTitle": "शीर्षक संपादित करें"
       },
       "sidebar": {
         "reviewers": "समीक्षक",

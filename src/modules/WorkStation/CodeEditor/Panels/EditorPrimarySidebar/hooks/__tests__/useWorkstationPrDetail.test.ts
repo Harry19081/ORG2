@@ -193,7 +193,6 @@ describe("useWorkstationPrDetail cache mutations", () => {
     apiMocks.updatePRDraftStateLocal.mockResolvedValue(undefined);
     apiMocks.updatePRLocal.mockResolvedValue({
       title: "Revised",
-      body: "Updated description",
       base: { ref: "release" },
     });
     apiMocks.updatePRStateLocal.mockResolvedValue({});
@@ -653,7 +652,6 @@ describe("useWorkstationPrDetail cache mutations", () => {
       await callbacks.updatePullRequestState?.("closed");
       await callbacks.updatePullRequest?.({
         title: "Revised",
-        body: "Updated description",
         base: "release",
       });
       await callbacks.updateRequestedReviewers?.(["new-reviewer"]);
@@ -685,7 +683,7 @@ describe("useWorkstationPrDetail cache mutations", () => {
     expect(apiMocks.updatePRLocal).toHaveBeenCalledWith(
       REPO_FULL_NAME,
       ACTION_PR.number,
-      { title: "Revised", body: "Updated description", base: "release" }
+      { title: "Revised", base: "release" }
     );
     expect(apiMocks.requestPRReviewersLocal).toHaveBeenCalledWith(
       REPO_FULL_NAME,

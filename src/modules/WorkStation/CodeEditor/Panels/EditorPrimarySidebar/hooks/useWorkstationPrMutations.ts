@@ -375,11 +375,7 @@ export function useWorkstationPrMutations({
   );
 
   const updatePullRequest = useCallback(
-    async (changes: {
-      title?: string;
-      body?: string;
-      base?: string;
-    }): Promise<void> => {
+    async (changes: { title?: string; base?: string }): Promise<void> => {
       if (!repoFullName || !pr) {
         throw new Error("GitHub repository context is unavailable");
       }
@@ -387,7 +383,6 @@ export function useWorkstationPrMutations({
         () => updatePRLocal(repoFullName, pr.number, changes),
         {
           ...(changes.title !== undefined ? { title: changes.title } : {}),
-          ...(changes.body !== undefined ? { body: changes.body } : {}),
           ...(changes.base !== undefined
             ? { base: { ref: changes.base } }
             : {}),

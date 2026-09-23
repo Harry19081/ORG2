@@ -17,6 +17,10 @@ export interface DetailFlowHeaderActor {
 
 interface DetailFlowHeaderProps {
   title: string;
+  /** Replaces the heading while the caller edits its title. */
+  titleEditor?: React.ReactNode;
+  /** Action beside the title, centered against the heading line. */
+  titleAction?: React.ReactNode;
   identifier?: React.ReactNode;
   /** Status pill rendered ahead of the flow sentence. */
   status: React.ReactNode;
@@ -33,6 +37,8 @@ interface DetailFlowHeaderProps {
 /** Full, wrapping entity title plus the shared PR-style activity subline. */
 export default function DetailFlowHeader({
   title,
+  titleEditor,
+  titleAction,
   identifier,
   status,
   actor,
@@ -41,26 +47,41 @@ export default function DetailFlowHeader({
   ariaLabel,
   testIdPrefix,
 }: DetailFlowHeaderProps): React.ReactNode {
+  const heading = titleEditor ? (
+    <div data-testid={`${testIdPrefix}-title`} className="min-w-0 flex-1">
+      {titleEditor}
+    </div>
+  ) : (
+    <h2
+      data-testid={`${testIdPrefix}-title`}
+      className={DETAIL_FLOW_HEADER_TOKENS.title}
+    >
+      {title}
+      {identifier ? (
+        <>
+          {" "}
+          <span className="font-normal whitespace-nowrap text-text-3">
+            {identifier}
+          </span>
+        </>
+      ) : null}
+    </h2>
+  );
+
   return (
     <section
       data-testid={`${testIdPrefix}-header`}
       aria-label={ariaLabel}
       className={DETAIL_FLOW_HEADER_TOKENS.container}
     >
-      <h2
-        data-testid={`${testIdPrefix}-title`}
-        className={DETAIL_FLOW_HEADER_TOKENS.title}
-      >
-        {title}
-        {identifier ? (
-          <>
-            {" "}
-            <span className="font-normal whitespace-nowrap text-text-3">
-              {identifier}
-            </span>
-          </>
-        ) : null}
-      </h2>
+      {titleEditor || titleAction ? (
+        <div className="flex min-w-0 items-center gap-2">
+          {heading}
+          {titleAction}
+        </div>
+      ) : (
+        heading
+      )}
       <div className={DETAIL_FLOW_HEADER_TOKENS.metadataRow}>
         <span
           data-testid={`${testIdPrefix}-status`}

@@ -1278,10 +1278,7 @@
         "noBranches": "No branches found",
         "changeBase": "Change target branch",
         "title": "Title",
-        "description": "Description",
-        "save": "Save changes",
-        "cancel": "Cancel",
-        "editTitleDescription": "Edit title and description"
+        "editTitle": "Edit title"
       },
       "sidebar": {
         "reviewers": "Reviewers",

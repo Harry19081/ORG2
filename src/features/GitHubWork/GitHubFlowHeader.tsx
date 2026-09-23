@@ -17,6 +17,8 @@ export interface GitHubFlowHeaderActor {
 
 interface GitHubFlowHeaderProps {
   title: string;
+  titleEditor?: React.ReactNode;
+  titleAction?: React.ReactNode;
   number: number;
   /** Status pill rendered ahead of the flow sentence. */
   status: React.ReactNode;
@@ -32,6 +34,8 @@ interface GitHubFlowHeaderProps {
 
 export function GitHubFlowHeader({
   title,
+  titleEditor,
+  titleAction,
   number,
   status,
   actor,
@@ -43,6 +47,8 @@ export function GitHubFlowHeader({
   return (
     <DetailFlowHeader
       title={title}
+      titleEditor={titleEditor}
+      titleAction={titleAction}
       identifier={`#${number}`}
       status={status}
       actor={actor}

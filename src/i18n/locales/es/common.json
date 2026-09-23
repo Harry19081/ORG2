@@ -1395,10 +1395,7 @@
         "noBranches": "No se encontraron ramas",
         "changeBase": "Cambiar rama de destino",
         "title": "Título",
-        "description": "Descripción",
-        "save": "Guardar cambios",
-        "cancel": "Cancelar",
-        "editTitleDescription": "Editar título y descripción"
+        "editTitle": "Editar título"
       },
       "sidebar": {
         "reviewers": "Revisores",

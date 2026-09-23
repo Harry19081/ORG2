@@ -1278,10 +1278,7 @@
         "noBranches": "Tidak ada branch ditemukan",
         "changeBase": "Ubah branch tujuan",
         "title": "Judul",
-        "description": "Deskripsi",
-        "save": "Simpan perubahan",
-        "cancel": "Batal",
-        "editTitleDescription": "Edit judul dan deskripsi"
+        "editTitle": "Edit judul"
       },
       "sidebar": {
         "reviewers": "Peninjau",

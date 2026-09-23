@@ -37,10 +37,9 @@ pub async fn github_update_pr(
     repo_full_name: String,
     pr_number: u64,
     title: Option<String>,
-    body: Option<String>,
     base: Option<String>,
 ) -> Result<Value, String> {
-    if title.is_none() && body.is_none() && base.is_none() {
+    if title.is_none() && base.is_none() {
         return Err("No pull request changes supplied".to_string());
     }
     if title.as_ref().is_some_and(|value| value.trim().is_empty()) {
@@ -52,9 +51,6 @@ pub async fn github_update_pr(
     let mut payload = json!({});
     if let Some(title) = title {
         payload["title"] = json!(title);
-    }
-    if let Some(body) = body {
-        payload["body"] = json!(body);
     }
     if let Some(base) = base {
         payload["base"] = json!(base);
@@ -74,18 +70,18 @@ mod update_tests {
 
     #[tokio::test]
     async fn rejects_empty_pr_updates_before_sending_a_request() {
-        assert!(github_update_pr("org/repo".into(), 1, None, None, None)
+        assert!(github_update_pr("org/repo".into(), 1, None, None)
             .await
             .unwrap_err()
             .contains("No pull request changes"));
         assert!(
-            github_update_pr("org/repo".into(), 1, Some("  ".into()), None, None)
+            github_update_pr("org/repo".into(), 1, Some("  ".into()), None)
                 .await
                 .unwrap_err()
                 .contains("title cannot be empty")
         );
         assert!(
-            github_update_pr("org/repo".into(), 1, None, None, Some("".into()))
+            github_update_pr("org/repo".into(), 1, None, Some("".into()))
                 .await
                 .unwrap_err()
                 .contains("base branch cannot be empty")

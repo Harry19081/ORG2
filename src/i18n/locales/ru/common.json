@@ -1395,10 +1395,7 @@
         "noBranches": "Ветки не найдены",
         "changeBase": "Изменить целевую ветку",
         "title": "Заголовок",
-        "description": "Описание",
-        "save": "Сохранить изменения",
-        "cancel": "Отмена",
-        "editTitleDescription": "Изменить заголовок и описание"
+        "editTitle": "Изменить заголовок"
       },
       "sidebar": {
         "reviewers": "Рецензенты",

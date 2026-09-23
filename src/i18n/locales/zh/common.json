@@ -1229,10 +1229,7 @@
         "noBranches": "未找到分支",
         "changeBase": "更改目标分支",
         "title": "标题",
-        "description": "描述",
-        "save": "保存更改",
-        "cancel": "取消",
-        "editTitleDescription": "编辑标题和描述"
+        "editTitle": "编辑标题"
       },
       "sidebar": {
         "reviewers": "评审人",

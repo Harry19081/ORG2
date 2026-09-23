@@ -1395,10 +1395,7 @@
         "noBranches": "ブランチが見つかりません",
         "changeBase": "マージ先ブランチを変更",
         "title": "タイトル",
-        "description": "説明",
-        "save": "変更を保存",
-        "cancel": "キャンセル",
-        "editTitleDescription": "タイトルと説明を編集"
+        "editTitle": "タイトルを編集"
       },
       "sidebar": {
         "reviewers": "レビュアー",
