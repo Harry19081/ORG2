@@ -233,8 +233,10 @@ fn run_dispatcher(
     }
 }
 
+#[cfg(target_os = "macos")]
 pub(crate) const CLAUDE_DESKTOP_HISTORY_LINE: &str = "2.2553";
 
+#[cfg(target_os = "macos")]
 pub(crate) fn claude_desktop_prepares_history(version: &str) -> bool {
     let mut parts = version.trim().split('.');
     let (Some(major), Some(minor), Some(patch)) = (parts.next(), parts.next(), parts.next()) else {
@@ -310,6 +312,7 @@ pub(super) use process::{claude_writer_identities, writer_identity_current};
 
 #[cfg(test)]
 mod tests {
+    #[cfg(target_os = "macos")]
     #[test]
     fn only_the_audited_claude_desktop_line_prepares_history_before_launch() {
         for version in ["2.2553.1", "2.2553.13", " 2.2553.99 "] {
