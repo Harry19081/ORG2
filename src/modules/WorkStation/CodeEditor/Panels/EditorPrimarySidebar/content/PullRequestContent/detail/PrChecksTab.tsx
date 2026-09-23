@@ -9,6 +9,7 @@ import { useTranslation } from "react-i18next";
 
 import type { GitHubChecksSummary } from "@src/api/tauri/github";
 import CiCheckStateIcon from "@src/components/CiCheckStateIcon";
+import CiPendingDot from "@src/components/CiPendingDot";
 import { Placeholder } from "@src/components/Placeholder";
 import { DETAIL_PANEL_TOKENS } from "@src/config/detailPanelTokens";
 import { HugeiconsIcon, SquareArrowUpRight02Icon } from "@src/icons";
@@ -87,12 +88,14 @@ export const PrChecksTab: React.FC<PrChecksTabProps> = ({
 
   if (loading && !checks) {
     return (
-      <Placeholder
-        loadingIconOnly
-        variant="loading"
-        placement="sidebar"
-        fillParentHeight
-      />
+      <div
+        className="flex min-h-0 flex-1 items-center justify-center"
+        role="status"
+        aria-label={t("git.pr.checks.pending")}
+        data-testid="pr-checks-loading"
+      >
+        <CiPendingDot size={20} />
+      </div>
     );
   }
 

@@ -14,6 +14,7 @@ import type { GitCommitPerson } from "@src/api/http/git/types";
 import type { GitHubChecksSummary } from "@src/api/tauri/github";
 import AnyIcon from "@src/components/AnyIcon";
 import Button from "@src/components/Button";
+import CiPendingDot from "@src/components/CiPendingDot";
 import PersonAvatar from "@src/components/PersonAvatar";
 import { Placeholder } from "@src/components/Placeholder";
 import { DETAIL_PANEL_TOKENS } from "@src/config/detailPanelTokens";
@@ -23,7 +24,6 @@ import {
   ArrowLeft01Icon,
   CancelCircleIcon,
   CheckmarkCircle01Icon,
-  CircleDotDashedIcon,
   CodeXmlIcon,
   Copy01Icon,
   GitCommitHorizontalIcon,
@@ -156,11 +156,6 @@ function CommitCheckStatus({
 }): React.ReactNode {
   const isSuccess = checks.state === "success";
   const isFailure = checks.state === "failure";
-  const Icon = isSuccess
-    ? CheckmarkCircle01Icon
-    : isFailure
-      ? CancelCircleIcon
-      : CircleDotDashedIcon;
   return (
     <span
       className={`inline-flex items-center gap-1 font-medium tabular-nums ${
@@ -171,7 +166,16 @@ function CommitCheckStatus({
             : "text-warning-6"
       }`}
     >
-      <AnyIcon icon={Icon} size={13} strokeWidth={1.9} aria-hidden />
+      {isSuccess || isFailure ? (
+        <AnyIcon
+          icon={isSuccess ? CheckmarkCircle01Icon : CancelCircleIcon}
+          size={13}
+          strokeWidth={1.9}
+          aria-hidden
+        />
+      ) : (
+        <CiPendingDot size={13} />
+      )}
       {checks.complete} / {checks.total}
     </span>
   );

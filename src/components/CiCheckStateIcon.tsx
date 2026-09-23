@@ -1,19 +1,19 @@
 /**
  * CiCheckStateIcon
  *
- * The one glyph vocabulary for a CI verdict — green tick, red cross, spinning
- * primary loader, muted slash — shared by every surface that renders check state
+ * The one glyph vocabulary for a CI verdict — green tick, red cross, orange
+ * breathing dot, muted slash — shared by every surface that renders check state
  * (the Checks tab, the merge-status rail, and its checks panel) so a passing
  * check never reads differently between them.
  */
 import React from "react";
 
+import CiPendingDot from "@src/components/CiPendingDot";
 import {
   CancelCircleIcon,
   CheckmarkCircle01Icon,
   CircleSlashIcon,
   HugeiconsIcon,
-  Loading03Icon,
 } from "@src/icons";
 import type { CiCheckState } from "@src/services/git/ciCheckState";
 
@@ -27,11 +27,6 @@ const STATE_ICONS = {
     icon: CancelCircleIcon,
     dataIcon: "xcircle",
     className: "text-danger-6",
-  },
-  pending: {
-    icon: Loading03Icon,
-    dataIcon: "loader",
-    className: "animate-spin text-primary-6",
   },
   neutral: {
     icon: CircleSlashIcon,
@@ -51,6 +46,9 @@ export function CiCheckStateIcon({
   size = 15,
   className = "",
 }: CiCheckStateIconProps): React.ReactNode {
+  if (state === "pending") {
+    return <CiPendingDot size={size} className={className} />;
+  }
   const { icon, dataIcon, className: toneClass } = STATE_ICONS[state];
   return (
     <HugeiconsIcon

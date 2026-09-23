@@ -1,6 +1,7 @@
 import React from "react";
 
 import type { PullRequestCiStatus } from "@src/api/tauri/github";
+import CiPendingDot from "@src/components/CiPendingDot";
 import {
   Cancel01Icon,
   CancelCircleIcon,
@@ -9,7 +10,6 @@ import {
   CircleSlashIcon,
   EllipsisIcon,
   HugeiconsIcon,
-  LoaderCircleIcon,
   MinusSignIcon,
   Tick01Icon,
 } from "@src/icons";
@@ -41,12 +41,7 @@ const PrCiStatusIndicator: React.FC<PrCiStatusIndicatorProps> = ({
       ) : status === "failure" ? (
         <HugeiconsIcon icon={Cancel01Icon} data-icon="x" {...iconProps} />
       ) : status === "pending" ? (
-        <span
-          className="inline-flex shrink-0 items-center justify-center"
-          style={{ width: size, height: size }}
-        >
-          <span className="inline-block h-1.5 w-1.5 animate-pulse rounded-full bg-current" />
-        </span>
+        <CiPendingDot size={size} />
       ) : status === "none" ? (
         <HugeiconsIcon icon={MinusSignIcon} data-icon="minus" {...iconProps} />
       ) : (
@@ -69,12 +64,7 @@ const PrCiStatusIndicator: React.FC<PrCiStatusIndicatorProps> = ({
         {...iconProps}
       />
     ) : status === "pending" ? (
-      <HugeiconsIcon
-        icon={LoaderCircleIcon}
-        data-icon="loader-circle"
-        {...iconProps}
-        className="animate-spin"
-      />
+      <CiPendingDot size={size} />
     ) : status === "none" ? (
       <HugeiconsIcon
         icon={CircleSlashIcon}
@@ -94,7 +84,7 @@ const PrCiStatusIndicator: React.FC<PrCiStatusIndicatorProps> = ({
       : status === "failure"
         ? "text-danger-6"
         : status === "pending"
-          ? "text-primary-6"
+          ? "text-warning-6"
           : "text-text-3";
 
   return (
