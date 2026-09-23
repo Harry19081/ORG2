@@ -1,6 +1,15 @@
 import { useSyncExternalStore } from "react";
 
-import type { HoverCardPosition } from "./HoverCardBase";
+/**
+ * Lives here rather than in HoverCardBase because this module is the one
+ * HoverCardBase already depends on. Declaring it there made the two import
+ * each other — harmless at runtime, since the back edge was type-only and
+ * erased, but a cycle the graph had to carry.
+ */
+export type HoverCardPosition =
+  | "bottom-start"
+  | "right-start"
+  | "right-or-bottom";
 
 const DEFAULT_POSITION: HoverCardPosition = "bottom-start";
 
