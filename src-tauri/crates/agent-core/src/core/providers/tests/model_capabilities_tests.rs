@@ -8,10 +8,6 @@ fn claude_fable_5_is_always_on() {
     let caps = resolve("claude-fable-5-20260601", None);
     assert_eq!(caps.thinking, ThinkingSupport::AlwaysOn);
     assert_eq!(caps.context_window, 1_000_000);
-
-    let opus = resolve("claude-opus-5", None);
-    assert_eq!(opus.thinking, ThinkingSupport::AlwaysOn);
-    assert_eq!(opus.context_window, 1_000_000);
 }
 
 /// Fable 5.1 is the same family as Fable 5 — 1M window, thinking always on —
@@ -98,6 +94,18 @@ fn sonnet_4_6_is_1m() {
     assert_eq!(caps.context_window, 1_000_000);
 }
 
+#[test]
+fn opus_5_5_requires_thinking_while_opus_5_can_disable_it() {
+    assert_eq!(
+        resolve("claude-opus-5-5", None).thinking,
+        ThinkingSupport::AlwaysOn
+    );
+    assert_eq!(
+        resolve("claude-opus-5", None).thinking,
+        ThinkingSupport::Optional
+    );
+}
+
 // ── OpenAI family ──
 
 #[test]
@@ -119,6 +127,16 @@ fn astra_has_reasoning_and_a_1050k_context_including_variants_and_aliases() {
 }
 
 #[test]
+fn gpt_6_sol_and_luna_have_reasoning_and_a_1050k_context() {
+    for model in ["gpt-6-sol", "gpt-6-luna", "openai/gpt-6-sol-high"] {
+        let caps = resolve(model, None);
+        assert_eq!(caps.thinking, ThinkingSupport::AlwaysOn, "{model}");
+        assert_eq!(caps.context_window, 1_050_000, "{model}");
+        assert_eq!(classify_family(model, "openrouter"), ModelFamily::OpenAi);
+    }
+}
+
+#[test]
 fn gpt5_is_always_on() {
     let caps = resolve("gpt-5-2025-06-01", None);
     assert_eq!(caps.thinking, ThinkingSupport::AlwaysOn);
@@ -131,6 +149,16 @@ fn gpt5_is_always_on() {
     let gpt56 = resolve("gpt-5.6-sol", None);
     assert_eq!(gpt56.thinking, ThinkingSupport::AlwaysOn);
     assert_eq!(gpt56.context_window, 1_050_000);
+}
+
+#[test]
+fn gpt5_context_windows_follow_the_published_model_limits() {
+    for model in ["gpt-5.6", "gpt-5.4"] {
+        assert_eq!(resolve(model, None).context_window, 1_050_000, "{model}");
+    }
+    for model in ["gpt-5.4-mini", "gpt-5.4-nano", "gpt-5.3-codex", "gpt-5.2"] {
+        assert_eq!(resolve(model, None).context_window, 400_000, "{model}");
+    }
 }
 
 #[test]

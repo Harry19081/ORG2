@@ -299,8 +299,10 @@ pub(super) fn codex_app_server_thread_model(model: Option<&str>) -> Option<Strin
 }
 
 fn map_codex_model_variant(model: &str) -> CodexModelLaunchConfig {
-    const CODEX_VARIANT_BASES: [&str; 9] = [
+    const CODEX_VARIANT_BASES: [&str; 11] = [
         "gpt-6-astra",
+        "gpt-6-sol",
+        "gpt-6-luna",
         "gpt-5.6-sol",
         "gpt-5.6-terra",
         "gpt-5.6-luna",
@@ -323,12 +325,17 @@ fn map_codex_model_variant(model: &str) -> CodexModelLaunchConfig {
         let Some(reasoning) = suffix_parts.first().copied() else {
             continue;
         };
-        // Astra and GPT-5.6 support Max above xhigh; do not reinterpret unsupported Max
+        // GPT-6 and GPT-5.6 support Max above xhigh; do not reinterpret unsupported Max
         // suffixes for older families as a launch override.
         let supports_max = reasoning == "max"
             && matches!(
                 base_model,
-                "gpt-6-astra" | "gpt-5.6-sol" | "gpt-5.6-terra" | "gpt-5.6-luna"
+                "gpt-6-astra"
+                    | "gpt-6-sol"
+                    | "gpt-6-luna"
+                    | "gpt-5.6-sol"
+                    | "gpt-5.6-terra"
+                    | "gpt-5.6-luna"
             );
         if !CODEX_REASONING_LEVELS.contains(&reasoning) && !supports_max {
             continue;

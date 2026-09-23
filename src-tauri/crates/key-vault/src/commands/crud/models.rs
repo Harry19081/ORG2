@@ -29,6 +29,7 @@ fn account_uses_anthropic_native_messages(entry: &ModelKey) -> bool {
 }
 
 pub const CLAUDE_CODE_OAUTH_MODELS: &[&str] = &[
+    "claude-opus-5-5",
     "claude-opus-5",
     "claude-sonnet-5",
     "claude-fable-5-1",
@@ -42,6 +43,7 @@ pub const CLAUDE_CODE_OAUTH_MODELS: &[&str] = &[
 ];
 
 pub const CLAUDE_CODE_OAUTH_DEFAULT_ENABLED_MODELS: &[&str] = &[
+    "claude-opus-5-5",
     "claude-opus-5",
     "claude-sonnet-5",
     "claude-fable-5-1",
@@ -160,12 +162,22 @@ fn codex_model_supports_variants(model: &str) -> bool {
 fn codex_model_supports_fast_tier(model: &str) -> bool {
     matches!(
         model,
-        "gpt-6-astra" | "gpt-5.6-sol" | "gpt-5.6-terra" | "gpt-5.6-luna" | "gpt-5.5" | "gpt-5.4"
+        "gpt-6-astra"
+            | "gpt-6-sol"
+            | "gpt-6-luna"
+            | "gpt-5.6-sol"
+            | "gpt-5.6-terra"
+            | "gpt-5.6-luna"
+            | "gpt-5.5"
+            | "gpt-5.4"
     )
 }
 
 fn codex_model_supports_ultra_tier(model: &str) -> bool {
-    matches!(model, "gpt-6-astra" | "gpt-5.6-sol" | "gpt-5.6-terra")
+    matches!(
+        model,
+        "gpt-6-astra" | "gpt-6-sol" | "gpt-5.6-sol" | "gpt-5.6-terra"
+    )
 }
 
 fn codex_effort_variants_for_base_model(base_model: &str) -> Vec<ModelVariantInfo> {
@@ -174,7 +186,12 @@ fn codex_effort_variants_for_base_model(base_model: &str) -> Vec<ModelVariantInf
     let mut efforts = vec!["low", "medium", "high", "xhigh"];
     if matches!(
         base_model,
-        "gpt-6-astra" | "gpt-5.6-sol" | "gpt-5.6-terra" | "gpt-5.6-luna"
+        "gpt-6-astra"
+            | "gpt-6-sol"
+            | "gpt-6-luna"
+            | "gpt-5.6-sol"
+            | "gpt-5.6-terra"
+            | "gpt-5.6-luna"
     ) {
         efforts.push("max");
     }

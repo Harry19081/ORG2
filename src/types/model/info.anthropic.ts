@@ -11,6 +11,34 @@ import type { ModelInfoEntry } from "@src/types/model/info.types";
 
 export const ANTHROPIC_MODEL_INFO_ENTRIES: ModelInfoEntry[] = [
   // ─── Anthropic (Claude) ───────────────────────────────────
+  // https://platform.claude.com/docs/en/models/opus-5-5/overview
+  {
+    pattern: "claude-opus-5-5",
+    info: {
+      provider: "Anthropic",
+      providerKey: "anthropic",
+      contextWindow: 1000,
+      maxOutput: 128,
+      vision: true,
+      reasoning: true,
+      strengthKeys: ["coding", "agentic", "reasoning", "planning"],
+      pricingTier: "premium",
+    },
+  },
+  // https://platform.claude.com/docs/en/models/opus-5/overview
+  {
+    pattern: "claude-opus-5",
+    info: {
+      provider: "Anthropic",
+      providerKey: "anthropic",
+      contextWindow: 1000,
+      maxOutput: 128,
+      vision: true,
+      reasoning: true,
+      strengthKeys: ["coding", "agentic", "reasoning", "planning"],
+      pricingTier: "expensive",
+    },
+  },
   // Known claude-opus-4.6/4.7/4.8 releases upgraded to 1M; 4 / 4.1 /
   // 4.5 stayed at 200K. Mirror the Rust FAMILY_RULES split.
   {
@@ -19,7 +47,7 @@ export const ANTHROPIC_MODEL_INFO_ENTRIES: ModelInfoEntry[] = [
       provider: "Anthropic",
       providerKey: "anthropic",
       contextWindow: 1000,
-      maxOutput: 32,
+      maxOutput: 128,
       vision: true,
       reasoning: true,
       strengthKeys: ["coding", "agentic", "reasoning", "planning"],
@@ -32,7 +60,7 @@ export const ANTHROPIC_MODEL_INFO_ENTRIES: ModelInfoEntry[] = [
       provider: "Anthropic",
       providerKey: "anthropic",
       contextWindow: 1000,
-      maxOutput: 32,
+      maxOutput: 128,
       vision: true,
       reasoning: true,
       strengthKeys: ["coding", "agentic", "reasoning", "planning"],
@@ -45,7 +73,21 @@ export const ANTHROPIC_MODEL_INFO_ENTRIES: ModelInfoEntry[] = [
       provider: "Anthropic",
       providerKey: "anthropic",
       contextWindow: 1000,
-      maxOutput: 32,
+      maxOutput: 128,
+      vision: true,
+      reasoning: true,
+      strengthKeys: ["coding", "agentic", "reasoning", "planning"],
+      pricingTier: "expensive",
+    },
+  },
+  // https://platform.claude.com/docs/en/models/opus-4-5/overview
+  {
+    pattern: "claude-opus-4-5",
+    info: {
+      provider: "Anthropic",
+      providerKey: "anthropic",
+      contextWindow: 200,
+      maxOutput: 64,
       vision: true,
       reasoning: true,
       strengthKeys: ["coding", "agentic", "reasoning", "planning"],
@@ -71,7 +113,7 @@ export const ANTHROPIC_MODEL_INFO_ENTRIES: ModelInfoEntry[] = [
       provider: "Anthropic",
       providerKey: "anthropic",
       contextWindow: 200,
-      maxOutput: 16,
+      maxOutput: 64,
       vision: true,
       reasoning: true,
       strengthKeys: ["coding", "balanced", "agentic", "speed"],
@@ -84,7 +126,7 @@ export const ANTHROPIC_MODEL_INFO_ENTRIES: ModelInfoEntry[] = [
       provider: "Anthropic",
       providerKey: "anthropic",
       contextWindow: 200,
-      maxOutput: 16,
+      maxOutput: 64,
       vision: true,
       reasoning: true,
       strengthKeys: ["coding", "balanced", "agentic", "speed"],
@@ -97,7 +139,7 @@ export const ANTHROPIC_MODEL_INFO_ENTRIES: ModelInfoEntry[] = [
       provider: "Anthropic",
       providerKey: "anthropic",
       contextWindow: 1000,
-      maxOutput: 16,
+      maxOutput: 128,
       vision: true,
       reasoning: true,
       strengthKeys: ["coding", "balanced", "agentic", "speed"],
@@ -110,7 +152,7 @@ export const ANTHROPIC_MODEL_INFO_ENTRIES: ModelInfoEntry[] = [
       provider: "Anthropic",
       providerKey: "anthropic",
       contextWindow: 1000,
-      maxOutput: 16,
+      maxOutput: 128,
       vision: true,
       reasoning: true,
       strengthKeys: ["coding", "balanced", "agentic", "speed"],
@@ -141,6 +183,20 @@ export const ANTHROPIC_MODEL_INFO_ENTRIES: ModelInfoEntry[] = [
       reasoning: true,
       strengthKeys: ["speed", "costEffective", "highVolume"],
       pricingTier: "budget",
+    },
+  },
+  // https://platform.claude.com/docs/en/models/sonnet-5/overview
+  {
+    pattern: "claude-sonnet-5",
+    info: {
+      provider: "Anthropic",
+      providerKey: "anthropic",
+      contextWindow: 1000,
+      maxOutput: 128,
+      vision: true,
+      reasoning: true,
+      strengthKeys: ["coding", "balanced", "agentic", "speed"],
+      pricingTier: "moderate",
     },
   },
   {
@@ -205,14 +261,14 @@ export const ANTHROPIC_MODEL_INFO_ENTRIES: ModelInfoEntry[] = [
       pricingTier: "expensive",
     },
   },
-  // claude-fable-5 / claude-mythos: 1M context window (Anthropic).
+  // https://platform.claude.com/docs/en/models/fable-5/overview
   {
     pattern: "claude-fable",
     info: {
       provider: "Anthropic",
       providerKey: "anthropic",
       contextWindow: 1000,
-      maxOutput: 32,
+      maxOutput: 128,
       vision: true,
       reasoning: true,
       strengthKeys: ["coding", "agentic", "reasoning", "planning"],
@@ -225,7 +281,7 @@ export const ANTHROPIC_MODEL_INFO_ENTRIES: ModelInfoEntry[] = [
       provider: "Anthropic",
       providerKey: "anthropic",
       contextWindow: 1000,
-      maxOutput: 32,
+      maxOutput: 128,
       vision: true,
       reasoning: true,
       strengthKeys: ["coding", "agentic", "reasoning", "planning"],

@@ -73,6 +73,7 @@ const MODEL_INFO_ENTRIES: ModelInfoEntry[] = [
 function normalizeModelInfoCategory(category: string): string {
   return category
     .toLowerCase()
+    .replace(/claude-opus-4\.5/g, "claude-opus-4-5")
     .replace(/claude-opus-4-6/g, "claude-opus-4.6")
     .replace(/claude-opus-4-7/g, "claude-opus-4.7")
     .replace(/claude-opus-4-8/g, "claude-opus-4.8")

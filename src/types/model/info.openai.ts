@@ -25,6 +25,33 @@ export const OPENAI_MODEL_INFO_ENTRIES: ModelInfoEntry[] = [
       pricingTier: "premium",
     },
   },
+  // https://developers.openai.com/api/docs/models
+  {
+    pattern: "gpt-6-sol",
+    info: {
+      provider: "OpenAI",
+      providerKey: "openai",
+      contextWindow: 1050,
+      maxOutput: 128,
+      vision: true,
+      reasoning: true,
+      strengthKeys: ["longContext", "reasoning", "coding"],
+      pricingTier: "moderate",
+    },
+  },
+  {
+    pattern: "gpt-6-luna",
+    info: {
+      provider: "OpenAI",
+      providerKey: "openai",
+      contextWindow: 1050,
+      maxOutput: 128,
+      vision: true,
+      reasoning: true,
+      strengthKeys: ["longContext", "speed", "costEffective"],
+      pricingTier: "budget",
+    },
+  },
   {
     pattern: "gpt-5.5",
     info: {
@@ -35,6 +62,90 @@ export const OPENAI_MODEL_INFO_ENTRIES: ModelInfoEntry[] = [
       vision: true,
       reasoning: true,
       strengthKeys: ["longContext", "reasoning", "coding"],
+      pricingTier: "premium",
+    },
+  },
+  // https://developers.openai.com/api/docs/models/gpt-5.6-sol
+  {
+    pattern: "gpt-5.6",
+    info: {
+      provider: "OpenAI",
+      providerKey: "openai",
+      contextWindow: 1050,
+      maxOutput: 128,
+      vision: true,
+      reasoning: true,
+      strengthKeys: ["longContext", "reasoning", "coding"],
+      pricingTier: "premium",
+    },
+  },
+  // https://developers.openai.com/api/docs/models/gpt-5.4-mini
+  {
+    pattern: "gpt-5.4-mini",
+    info: {
+      provider: "OpenAI",
+      providerKey: "openai",
+      contextWindow: 400,
+      maxOutput: 128,
+      vision: true,
+      reasoning: true,
+      strengthKeys: ["coding", "speed", "costEffective"],
+      pricingTier: "budget",
+    },
+  },
+  // https://developers.openai.com/api/docs/models/gpt-5.4-nano
+  {
+    pattern: "gpt-5.4-nano",
+    info: {
+      provider: "OpenAI",
+      providerKey: "openai",
+      contextWindow: 400,
+      maxOutput: 128,
+      vision: true,
+      reasoning: true,
+      strengthKeys: ["speed", "costEffective"],
+      pricingTier: "budget",
+    },
+  },
+  // https://developers.openai.com/api/docs/models/gpt-5.4
+  {
+    pattern: "gpt-5.4",
+    info: {
+      provider: "OpenAI",
+      providerKey: "openai",
+      contextWindow: 1050,
+      maxOutput: 128,
+      vision: true,
+      reasoning: true,
+      strengthKeys: ["longContext", "reasoning", "coding"],
+      pricingTier: "premium",
+    },
+  },
+  // https://developers.openai.com/api/docs/models/gpt-5.3-codex
+  {
+    pattern: "gpt-5.3-codex",
+    info: {
+      provider: "OpenAI",
+      providerKey: "openai",
+      contextWindow: 400,
+      maxOutput: 128,
+      vision: true,
+      reasoning: true,
+      strengthKeys: ["coding", "agentic"],
+      pricingTier: "premium",
+    },
+  },
+  // https://developers.openai.com/api/docs/models/gpt-5.2
+  {
+    pattern: "gpt-5.2",
+    info: {
+      provider: "OpenAI",
+      providerKey: "openai",
+      contextWindow: 400,
+      maxOutput: 128,
+      vision: true,
+      reasoning: true,
+      strengthKeys: ["reasoning", "coding"],
       pricingTier: "premium",
     },
   },

@@ -370,6 +370,22 @@ fn build_codex_gpt_5_6_ultra_fast_variant() {
 }
 
 #[test]
+fn build_codex_gpt_6_sol_and_luna_variants_use_base_models() {
+    for (base, effort) in [("gpt-6-sol", "ultra"), ("gpt-6-luna", "max")] {
+        let model = format!("{base}-{effort}-fast");
+        let cmd = build_command!(ModelType::Codex, task = "write tests", model = Some(&model),);
+        let model_idx = cmd.iter().position(|arg| arg == "-m").unwrap();
+        assert_eq!(cmd[model_idx + 1], base);
+        assert!(cmd.contains(&format!("model_reasoning_effort=\"{effort}\"")));
+        assert!(cmd.contains(&"service_tier=\"priority\"".to_string()));
+        assert_eq!(
+            codex_app_server_thread_model(Some(&model)),
+            Some(base.into())
+        );
+    }
+}
+
+#[test]
 fn build_codex_gpt_5_6_max_fast_variant() {
     let cmd = build_command!(
         ModelType::Codex,

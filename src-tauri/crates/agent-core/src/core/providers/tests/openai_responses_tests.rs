@@ -6,8 +6,14 @@ use crate::providers::openai_responses::{
 };
 
 #[test]
-fn direct_openai_model_prefers_responses_for_astra() {
-    for model in ["gpt-6-astra", "GPT-6-ASTRA", "gpt-6-astra-ultra-fast"] {
+fn direct_openai_model_prefers_responses_for_gpt_6() {
+    for model in [
+        "gpt-6-astra",
+        "GPT-6-ASTRA",
+        "gpt-6-astra-ultra-fast",
+        "gpt-6-sol",
+        "gpt-6-luna-high",
+    ] {
         assert!(direct_openai_model_prefers_responses(model), "{model}");
     }
 }
