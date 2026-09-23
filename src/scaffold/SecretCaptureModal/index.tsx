@@ -316,7 +316,7 @@ export const SecretCaptureModal: FC = () => {
             <span>{t(`secretCapture.kind.${kind}`)}</span>
           </span>
           <Input
-            size="large"
+            size="default"
             visibilityToggle={false}
             className="w-full"
             ref={inputRef}

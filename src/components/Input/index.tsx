@@ -17,7 +17,7 @@
  * import Input from "@src/components/Input";
  *
  * <Input placeholder="Enter text" />
- * <Input type="password" size="large" />
+ * <Input type="password" size="default" />
  * <Input prefix={<Search size={16} />} />
  * <Input errorMessage="Name already exists" />
  * <Input errorMessage="Name already exists" errorPlacement="left" />
@@ -59,7 +59,7 @@ export interface InputProps extends Omit<
    * Input size
    * @default 'default'
    */
-  size?: "mini" | "small" | "default" | "large";
+  size?: "mini" | "small" | "default";
 
   /**
    * Corner treatment. `round` is a pill, matching `<Button shape="round">`.

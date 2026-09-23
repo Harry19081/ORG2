@@ -84,7 +84,7 @@ export function StartPageTabs({
                   onCreateTarget(String(value));
                 }
               }}
-              size="large"
+              size="default"
               appearance="bare"
               radius="pill"
               dropdownMinWidth={168}

@@ -151,7 +151,7 @@ export function OrganizationScopeHeader({
                   onChange(String(nextValue));
                 }}
                 showSearch={scopedOptions.length > 8}
-                size="large"
+                size="default"
                 appearance="bare"
                 radius="pill"
                 dropdownMinWidth={168}

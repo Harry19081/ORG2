@@ -144,7 +144,7 @@ export function SettingsTab({ onOpenDevices }: SettingsTabProps) {
                   value={preference}
                   options={themeOptions}
                   appearance="bare"
-                  size="large"
+                  size="default"
                   dropdownAlign="right"
                   ariaLabel={t("settings.theme")}
                   loading={themeStatus === "applying"}

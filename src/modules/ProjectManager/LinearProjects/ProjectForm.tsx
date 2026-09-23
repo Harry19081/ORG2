@@ -35,7 +35,7 @@ export const ProjectForm: React.FC<ProjectFormProps> = ({
   return (
     <div className="mt-4 space-y-3">
       <Input
-        size="large"
+        size="default"
         className="w-full"
         value={draft.name}
         onChange={(_value, event) =>
