@@ -1,4 +1,4 @@
-name: Dependency boundaries
+name: Circular dependencies
 on:
   pull_request:
   push:
@@ -6,10 +6,10 @@ on:
 permissions:
   contents: read
 concurrency:
-  group: dependency-boundaries-${{ github.ref }}
+  group: circular-dependencies-${{ github.ref }}
   cancel-in-progress: true
 jobs:
-  boundaries:
+  circular-dependencies:
     runs-on: ubuntu-latest
     timeout-minutes: 10
     steps:
@@ -20,5 +20,4 @@ jobs:
           node-version: "20"
           cache: pnpm
       - run: pnpm install --frozen-lockfile
-      - run: pnpm test:boundaries
-      - run: pnpm check:boundaries
+      - run: pnpm check:circular
